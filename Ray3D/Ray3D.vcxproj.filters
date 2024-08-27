@@ -799,5 +799,8 @@
     <None Include="src\vendor\glm\gtx\wrap.inl">
       <Filter>Header Files</Filter>
     </None>
+    <None Include="packages.config" />
+    <None Include="res\shaders\VertexShader.glsl" />
+    <None Include="res\shaders\FragmentShader.glsl" />
   </ItemGroup>
 </Project>

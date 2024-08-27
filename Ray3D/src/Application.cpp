@@ -45,6 +45,8 @@ int main()
         glfwTerminate();
     }
 
+    //Initializing the shader
+
 
     Renderer renderer;
 
@@ -62,7 +64,7 @@ int main()
         glfwSwapBuffers(window);
     }
 
-
+    glfwDestroyWindow(window);
     glfwTerminate();
 
     return 0;
