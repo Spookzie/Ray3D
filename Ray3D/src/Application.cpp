@@ -4,6 +4,13 @@
 #include "Renderer.h"
 
 
+void UpdateInput(GLFWwindow* window)
+{
+    if (glfwGetKey(window, GLFW_KEY_ESCAPE))
+        glfwSetWindowShouldClose(window, GL_TRUE);
+}
+
+
 void FramebufferResizeCallback(GLFWwindow* window, int fbw, int fbh)
 {
     glViewport(0, 0, fbw, fbh);
@@ -149,6 +156,20 @@ int main()
         glfwTerminate();
     }
 
+    
+    //OpenGL Options
+    glErrorCall( glEnable(GL_DEPTH_TEST) );
+
+    glErrorCall( glEnable(GL_CULL_FACE) );
+    glErrorCall( glCullFace(GL_BACK) );
+    glErrorCall( glFrontFace(GL_CCW) );
+
+    glErrorCall( glEnable(GL_BLEND) );
+    glErrorCall( glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA) );
+
+    glErrorCall( glPolygonMode(GL_FRONT_AND_BACK, GL_FILL) );
+
+
     //Initializing the shader
     GLuint coreProgram;
     if (!LoadShaders(coreProgram))
@@ -160,8 +181,10 @@ int main()
     //  GAME LOOP   //
     while (!glfwWindowShouldClose(window))
     {
-        //Polling for Events
-        glfwPollEvents();
+        glfwPollEvents();   //Polling for Events
+
+        //  UPDATE  //
+        UpdateInput(window);
 
         
         //  DRAW HERE   //
@@ -169,8 +192,7 @@ int main()
         renderer.Clear();
 
 
-        //Swapping buffers
-        glfwSwapBuffers(window);
+        glfwSwapBuffers(window);    //Swapping buffers
     }
 
     glfwDestroyWindow(window);
