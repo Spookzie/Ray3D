@@ -10,11 +10,115 @@ void FramebufferResizeCallback(GLFWwindow* window, int fbw, int fbh)
 }
 
 
+bool LoadShaders(GLuint& program)
+{
+    bool loadSuccess = true;
+    char infoLog[512];
+    GLint success;
+
+    std::string temp = "";
+    std::string src = "";
+
+    std::fstream inFile;
+
+    //  Vertex Shader   //
+     //Reading the shader file
+    inFile.open("res/shaders/VertexShader.glsl");
+
+    if (inFile.is_open())
+    {
+        while (std::getline(inFile, temp))
+            src += temp + "\n";
+    }
+    else
+    {
+        std::cout << "ERROR::Application.cpp::LoadShaders(): Failed to load Vertex Shader" << std::endl;
+        loadSuccess = false;
+    }
+
+    inFile.close();
+
+    //Compiling the shader file
+    GLuint vertexShader = glCreateShader(GL_VERTEX_SHADER);
+    const GLchar* v_src = src.c_str();
+    glShaderSource(vertexShader, 1, &v_src, NULL);
+    glCompileShader(vertexShader);
+
+    //Checking for errors during compilation
+    glGetShaderiv(vertexShader, GL_COMPILE_STATUS, &success);
+    if (!success)
+    {
+        glGetShaderInfoLog(vertexShader, 512, NULL, infoLog);
+        std::cout << "ERROR::Application.cpp::LoadShaders(): Failed to compile the vertex shader" << std::endl;
+        std::cout << infoLog << std::endl;
+        loadSuccess = false;
+    }
+
+
+    temp = "";
+    src = "";
+
+    //  Fragment Shader //
+    //Reading the shader file
+    inFile.open("res/shaders/FragmentShader.glsl");
+
+    if (inFile.is_open())
+    {
+        while (std::getline(inFile, temp))
+            src += temp + "\n";
+    }
+    else
+        std::cout << "ERROR::Application.cpp::LoadShaders(): Failed to load Fragment Shader" << std::endl;
+
+    inFile.close();
+
+    //Compiling the shader file
+    GLuint fragmentShader = glCreateShader(GL_FRAGMENT_SHADER);
+    const GLchar* f_src = src.c_str();
+    glShaderSource(fragmentShader, 1, &f_src, NULL);
+    glCompileShader(fragmentShader);
+
+    //Checking for errors during compilation
+    glGetShaderiv(fragmentShader, GL_COMPILE_STATUS, &success);
+    if (!success)
+    {
+        glGetShaderInfoLog(fragmentShader, 512, NULL, infoLog);
+        std::cout << "ERROR::Application.cpp::LoadShaders(): Failed to compile the fragment shader" << std::endl;
+        std::cout << infoLog << std::endl;
+        loadSuccess = false;
+    }
+    
+    //  Linking the Program //
+    program = glCreateProgram();
+
+    glAttachShader(program, vertexShader);
+    glAttachShader(program, fragmentShader);
+    glLinkProgram(program);
+
+    //Error Checking
+    glGetProgramiv(program, GL_LINK_STATUS, &success);
+    if (!success)
+    {
+        glGetProgramInfoLog(program, 512, NULL, infoLog);
+        std::cout << "ERROR::Application.cpp::LoadShaders(): Failed to link the program" << std::endl;
+        std::cout << infoLog << std::endl;
+        loadSuccess = false;
+    }
+
+
+    glErrorCall( glUseProgram(0) );
+    glDeleteShader(vertexShader);
+    glDeleteShader(fragmentShader);
+    
+    return loadSuccess;
+}
+
+
 int main()
 {
     //Initializing GLFW
     if (!glfwInit())
-        std::cout << "ERROR::Application.cpp: Failed to initialize GLFW" << std::endl;
+        std::cout << "ERROR::Application.cpp::main(): Failed to initialize GLFW" << std::endl;
 
 
     //  CREATING WINDOW //
@@ -41,11 +145,14 @@ int main()
 
     if (glewInit() != GLEW_OK)
     {
-        std::cout << "ERROR::Application.cpp: Failed to initialize GLEW" << std::endl;
+        std::cout << "ERROR::Application.cpp::main(): Failed to initialize GLEW" << std::endl;
         glfwTerminate();
     }
 
     //Initializing the shader
+    GLuint coreProgram;
+    if (!LoadShaders(coreProgram))
+        glfwTerminate();
 
 
     Renderer renderer;
@@ -56,9 +163,11 @@ int main()
         //Polling for Events
         glfwPollEvents();
 
+        
         //  DRAW HERE   //
-        glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
+        glErrorCall( glClearColor(0.0f, 0.0f, 0.0f, 1.0f) );
         renderer.Clear();
+
 
         //Swapping buffers
         glfwSwapBuffers(window);
@@ -66,6 +175,8 @@ int main()
 
     glfwDestroyWindow(window);
     glfwTerminate();
+
+    glErrorCall( glDeleteProgram(coreProgram) );
 
     return 0;
 }
