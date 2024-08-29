@@ -4,6 +4,20 @@
 #include "Renderer.h"
 
 
+Vertex vertices[] = {
+    //Position                          //Color                         //Texcoords
+    glm::vec3( 0.0f,  0.5f,  0.0f),     glm::vec3(1.0f, 0.0f, 0.0f),    glm::vec2(0.0f, 1.0f),      //index = 0
+    glm::vec3(-0.5f, -0.5f,  0.0f),     glm::vec3(0.0f, 1.0f, 0.0f),    glm::vec2(0.0f, 0.0f),      //        1
+    glm::vec3( 0.5f, -0.5f,  0.0f),     glm::vec3(0.0f, 0.0f, 1.0f),    glm::vec2(1.0f, 0.0f)       //        2
+};
+unsigned vertexCount = sizeof(vertices) / sizeof(Vertex);
+
+GLuint indices[] = {
+    0, 1, 2
+};
+unsigned indexCount = sizeof(indices) / sizeof(GLuint);
+
+
 void UpdateInput(GLFWwindow* window)
 {
     if (glfwGetKey(window, GLFW_KEY_ESCAPE))
@@ -157,7 +171,7 @@ int main()
     }
 
     
-    //OpenGL Options
+    //  OpenGL Options  //
     glErrorCall( glEnable(GL_DEPTH_TEST) );
 
     glErrorCall( glEnable(GL_CULL_FACE) );
@@ -175,13 +189,43 @@ int main()
     if (!LoadShaders(coreProgram))
         glfwTerminate();
 
+    
+    GLuint vao;
+    glErrorCall( glCreateVertexArrays(1, &vao) );
+    glErrorCall( glBindVertexArray(vao) );
+
+    GLuint vbo;
+    glErrorCall( glGenBuffers(1, &vbo) );
+    glErrorCall( glBindBuffer(GL_ARRAY_BUFFER, vbo) );
+    glErrorCall( glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW) );
+
+    GLuint ibo;
+    glErrorCall( glGenBuffers(1, &ibo) );
+    glErrorCall( glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ibo) );
+    glErrorCall( glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices), indices, GL_STATIC_DRAW) );
+
+    //  Setting up vertex attribute pointers   //
+    //Position
+    glErrorCall( glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (GLvoid*)offsetof(Vertex, position)) );
+    glErrorCall( glEnableVertexAttribArray(0) );
+
+    //Color
+    glErrorCall( glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (GLvoid*)offsetof(Vertex, color)) );
+    glErrorCall( glEnableVertexAttribArray(1) );
+
+    //Texcoord
+    glErrorCall( glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, sizeof(Vertex), (GLvoid*)offsetof(Vertex, texcoord)) );
+    glErrorCall( glEnableVertexAttribArray(2) );
+
+    glErrorCall( glBindVertexArray(0) );
+
 
     Renderer renderer;
 
     //  GAME LOOP   //
     while (!glfwWindowShouldClose(window))
     {
-        glfwPollEvents();   //Polling for Events
+        glfwPollEvents();
 
         //  UPDATE  //
         UpdateInput(window);
@@ -191,9 +235,14 @@ int main()
         glErrorCall( glClearColor(0.0f, 0.0f, 0.0f, 1.0f) );
         renderer.Clear();
 
+        glErrorCall( glUseProgram(coreProgram) );
+        glErrorCall( glBindVertexArray(vao) );
+        glErrorCall( glDrawElements(GL_TRIANGLES, indexCount, GL_UNSIGNED_INT, 0) );
 
-        glfwSwapBuffers(window);    //Swapping buffers
+
+        glfwSwapBuffers(window);
     }
+
 
     glfwDestroyWindow(window);
     glfwTerminate();
