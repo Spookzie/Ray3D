@@ -219,10 +219,9 @@ int main()
     glErrorCall( glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, sizeof(Vertex), (GLvoid*)offsetof(Vertex, texcoord)) );
     glErrorCall( glEnableVertexAttribArray(2) );
 
-    //glErrorCall( glBindVertexArray(0) );
 
-
-    //  Texture //
+    // **********************************
+    //  Texture 1   //
     int imgWidth = 0;
     int imgHeight = 0;
     unsigned char* img = SOIL_load_image("res/textures/Spookzie_Logo.png", &imgWidth, &imgHeight, NULL, SOIL_LOAD_RGBA);
@@ -245,9 +244,34 @@ int main()
         SOIL_free_image_data(img);
     }
     else
-        std::cout << "ERROR::Application.cpp::main(): Failed to load texture" << std::endl;
+        std::cout << "ERROR::Application.cpp::main(): Failed to load texture 0" << std::endl;
+    
+    //  Texture 2   //
+    int imgWidth1 = 0;
+    int imgHeight1 = 0;
+    unsigned char* img1 = SOIL_load_image("res/textures/Basketball.png", &imgWidth1, &imgHeight1, NULL, SOIL_LOAD_RGBA);
 
-    //glErrorCall( glBindTexture(GL_TEXTURE_2D, 0) );
+    GLuint texture1;
+    glErrorCall( glGenTextures(1, &texture1) );
+    glErrorCall( glBindTexture(GL_TEXTURE_2D, texture1) );
+
+    //Setting texture parameters
+    glErrorCall( glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT) );                    //Resampling texture down if it needs to be rendered small
+    glErrorCall( glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT) );                    //Resampling texture up if it needs to be rendered large
+    glErrorCall( glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR) );                //Clamping horizontally
+    glErrorCall( glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR) );  //Clamping vertically
+
+    //Uploading texture data
+    if (img1)
+    {
+        glErrorCall( glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, imgWidth1, imgHeight1, 0, GL_RGBA, GL_UNSIGNED_BYTE, img1) );
+        glErrorCall( glGenerateMipmap(GL_TEXTURE_2D) );
+        SOIL_free_image_data(img1);
+    }
+    else
+        std::cout << "ERROR::Application.cpp::main(): Failed to load texture 1" << std::endl;
+    // **********************************
+
 
 
     Renderer renderer;
@@ -269,10 +293,13 @@ int main()
 
         //Update uniforms
         glErrorCall( glUniform1i(glGetUniformLocation(coreProgram, "texture0"), 0) );
+        glErrorCall( glUniform1i(glGetUniformLocation(coreProgram, "texture1"), 1) );
 
         //Activate texture unit 0 and bind the texture
         glErrorCall( glActiveTexture(GL_TEXTURE0) );
         glErrorCall( glBindTexture(GL_TEXTURE_2D, texture0) );
+        glErrorCall( glActiveTexture(GL_TEXTURE1) );
+        glErrorCall( glBindTexture(GL_TEXTURE_2D, texture1) );
 
         glErrorCall( glBindVertexArray(vao) );
         glErrorCall( glDrawElements(GL_TRIANGLES, indexCount, GL_UNSIGNED_INT, 0) );
