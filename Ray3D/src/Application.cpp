@@ -9,7 +9,7 @@ Vertex vertices[] = {
     glm::vec3(-0.5f,  0.5f,  0.0f),     glm::vec3(1.0f, 0.0f, 0.0f),    glm::vec2(0.0f, 1.0f),      //index = 0 |   top left
     glm::vec3(-0.5f, -0.5f,  0.0f),     glm::vec3(0.0f, 1.0f, 0.0f),    glm::vec2(0.0f, 0.0f),      //        1 |   bottom left
     glm::vec3( 0.5f, -0.5f,  0.0f),     glm::vec3(0.0f, 0.0f, 1.0f),    glm::vec2(1.0f, 0.0f),      //        2 |   bottom right
-    glm::vec3( 0.5f,  0.5f,  0.0f),     glm::vec3(0.0f, 1.0f, 0.0f),    glm::vec2(1.0f, 0.0f)       //        3 |   top right
+    glm::vec3( 0.5f,  0.5f,  0.0f),     glm::vec3(0.0f, 1.0f, 0.0f),    glm::vec2(1.0f, 1.0f)       //        3 |   top right
 };
 unsigned vertexCount = sizeof(vertices) / sizeof(Vertex);
 
@@ -219,7 +219,35 @@ int main()
     glErrorCall( glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, sizeof(Vertex), (GLvoid*)offsetof(Vertex, texcoord)) );
     glErrorCall( glEnableVertexAttribArray(2) );
 
-    glErrorCall( glBindVertexArray(0) );
+    //glErrorCall( glBindVertexArray(0) );
+
+
+    //  Texture //
+    int imgWidth = 0;
+    int imgHeight = 0;
+    unsigned char* img = SOIL_load_image("res/textures/Spookzie_Logo.png", &imgWidth, &imgHeight, NULL, SOIL_LOAD_RGBA);
+
+    GLuint texture0;
+    glErrorCall( glGenTextures(1, &texture0) );
+    glErrorCall( glBindTexture(GL_TEXTURE_2D, texture0) );
+
+    //Setting texture parameters
+    glErrorCall( glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT) );                    //Resampling texture down if it needs to be rendered small
+    glErrorCall( glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT) );                    //Resampling texture up if it needs to be rendered large
+    glErrorCall( glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR) );                //Clamping horizontally
+    glErrorCall( glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR) );  //Clamping vertically
+
+    //Uploading texture data
+    if (img)
+    {
+        glErrorCall( glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, imgWidth, imgHeight, 0, GL_RGBA, GL_UNSIGNED_BYTE, img) );
+        glErrorCall( glGenerateMipmap(GL_TEXTURE_2D) );
+        SOIL_free_image_data(img);
+    }
+    else
+        std::cout << "ERROR::Application.cpp::main(): Failed to load texture" << std::endl;
+
+    //glErrorCall( glBindTexture(GL_TEXTURE_2D, 0) );
 
 
     Renderer renderer;
@@ -238,11 +266,27 @@ int main()
         renderer.Clear();
 
         glErrorCall( glUseProgram(coreProgram) );
+
+        //Update uniforms
+        glErrorCall( glUniform1i(glGetUniformLocation(coreProgram, "texture0"), 0) );
+
+        //Activate texture unit 0 and bind the texture
+        glErrorCall( glActiveTexture(GL_TEXTURE0) );
+        glErrorCall( glBindTexture(GL_TEXTURE_2D, texture0) );
+
         glErrorCall( glBindVertexArray(vao) );
         glErrorCall( glDrawElements(GL_TRIANGLES, indexCount, GL_UNSIGNED_INT, 0) );
 
 
         glfwSwapBuffers(window);
+
+
+        //Unbinding everything
+        glErrorCall( glBindVertexArray(0) );
+        glErrorCall( glBindBuffer(GL_ARRAY_BUFFER, 0) );
+        glErrorCall( glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0) );
+        glErrorCall( glUseProgram(0) );
+        glErrorCall( glBindTexture(GL_TEXTURE_2D, 0) );
     }
 
 

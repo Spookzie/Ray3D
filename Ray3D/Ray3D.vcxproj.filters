@@ -803,4 +803,9 @@
     <None Include="res\shaders\VertexShader.glsl" />
     <None Include="res\shaders\FragmentShader.glsl" />
   </ItemGroup>
+  <ItemGroup>
+    <Image Include="res\textures\Spookzie_Logo.png">
+      <Filter>Resource Files</Filter>
+    </Image>
+  </ItemGroup>
 </Project>
