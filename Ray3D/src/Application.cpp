@@ -281,19 +281,23 @@ int main()
         glfwSwapBuffers(window);
 
 
-        //Unbinding everything
-        glErrorCall( glBindVertexArray(0) );
-        glErrorCall( glBindBuffer(GL_ARRAY_BUFFER, 0) );
-        glErrorCall( glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0) );
-        glErrorCall( glUseProgram(0) );
-        glErrorCall( glBindTexture(GL_TEXTURE_2D, 0) );
+        // Unbinding (if needed)
+        // glErrorCall( glBindVertexArray(0) ); // Only needed if switching VAOs
+        // glErrorCall( glBindBuffer(GL_ARRAY_BUFFER, 0) ); // Only needed if switching VBOs
+        // glErrorCall( glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0) ); // Only needed if switching IBOs
+        // glErrorCall( glUseProgram(0) ); // Only needed if switching programs
+        // glErrorCall( glBindTexture(GL_TEXTURE_2D, 0) ); // Only needed if switching textures
     }
 
 
+    // Cleanup
+    glErrorCall( glDeleteTextures(1, &texture0) );
+    glErrorCall( glDeleteVertexArrays(1, &vao) );
+    glErrorCall( glDeleteBuffers(1, &vbo) );
+    glErrorCall( glDeleteBuffers(1, &ibo) );
+    glErrorCall( glDeleteProgram(coreProgram) );
     glfwDestroyWindow(window);
     glfwTerminate();
-
-    glErrorCall( glDeleteProgram(coreProgram) );
 
     return 0;
 }
