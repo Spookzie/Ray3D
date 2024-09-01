@@ -161,6 +161,7 @@ int main()
     glfwSetFramebufferSizeCallback(window, FramebufferResizeCallback);
 
     glfwMakeContextCurrent(window);
+    glfwSwapInterval(1);    //Enabling v-sync
 
 
     //Initializing GLEW
@@ -273,6 +274,20 @@ int main()
     // **********************************
 
 
+    //  MVP //
+    glm::mat4 modelMatrix(1.0f);
+    //modelMatrix = glm::translate(modelMatrix, glm::vec3(0.0f, 0.0f, 0.0f));                     //Moving
+    //modelMatrix = glm::rotate(modelMatrix, glm::radians(0.0f), glm::vec3(1.0f, 0.0f, 0.0f));    //Rotate around x
+    //modelMatrix = glm::rotate(modelMatrix, glm::radians(0.0f), glm::vec3(0.0f, 1.0f, 0.0f));    //              y
+    //modelMatrix = glm::rotate(modelMatrix, glm::radians(0.0f), glm::vec3(0.0f, 0.0f, 1.0f));    //              z
+    //modelMatrix = glm::scale(modelMatrix, glm::vec3(1.0f));                                     //Scaling
+
+    glErrorCall( glUseProgram(coreProgram) );
+
+    glErrorCall( glUniformMatrix4fv(glGetUniformLocation(coreProgram, "modelMatrix"), 1, GL_FALSE, glm::value_ptr(modelMatrix)) );
+
+    glErrorCall( glUseProgram(0) );
+
 
     Renderer renderer;
 
@@ -285,15 +300,19 @@ int main()
         UpdateInput(window);
 
         
-        //  DRAW HERE   //
         glErrorCall( glClearColor(0.0f, 0.0f, 0.0f, 1.0f) );
         renderer.Clear();
 
         glErrorCall( glUseProgram(coreProgram) );
 
-        //Update uniforms
+        //  Update uniforms   //
+        //Textures
         glErrorCall( glUniform1i(glGetUniformLocation(coreProgram, "texture0"), 0) );
         glErrorCall( glUniform1i(glGetUniformLocation(coreProgram, "texture1"), 1) );
+
+        //Rotating around z-axis
+        modelMatrix = glm::rotate(modelMatrix, glm::radians(2.0f), glm::vec3(0.0f, 0.0f, 1.0f));    //              z
+        glErrorCall(glUniformMatrix4fv(glGetUniformLocation(coreProgram, "modelMatrix"), 1, GL_FALSE, glm::value_ptr(modelMatrix)));
 
         //Activate texture unit 0 and bind the texture
         glErrorCall( glActiveTexture(GL_TEXTURE0) );
