@@ -158,6 +158,7 @@ int main()
 
     GLFWwindow* window = glfwCreateWindow(windowWidth, windowHeight, "Ray3D", NULL, NULL);
 
+    glfwGetFramebufferSize(window, &framebufferWidth, &framebufferHeight);
     glfwSetFramebufferSizeCallback(window, FramebufferResizeCallback);
 
     glfwMakeContextCurrent(window);
@@ -276,15 +277,35 @@ int main()
 
     //  MVP //
     glm::mat4 modelMatrix(1.0f);
-    //modelMatrix = glm::translate(modelMatrix, glm::vec3(0.0f, 0.0f, 0.0f));                     //Moving
-    //modelMatrix = glm::rotate(modelMatrix, glm::radians(0.0f), glm::vec3(1.0f, 0.0f, 0.0f));    //Rotate around x
-    //modelMatrix = glm::rotate(modelMatrix, glm::radians(0.0f), glm::vec3(0.0f, 1.0f, 0.0f));    //              y
-    //modelMatrix = glm::rotate(modelMatrix, glm::radians(0.0f), glm::vec3(0.0f, 0.0f, 1.0f));    //              z
-    //modelMatrix = glm::scale(modelMatrix, glm::vec3(1.0f));                                     //Scaling
+
+    /**
+    * Functions to alter the texture differently during runtime
+    * 
+    * modelMatrix = glm::translate(modelMatrix, glm::vec3(0.0f, 0.0f, 0.0f));                     //Moving
+    * modelMatrix = glm::rotate(modelMatrix, glm::radians(0.0f), glm::vec3(1.0f, 0.0f, 0.0f));    //Rotate around x
+    * modelMatrix = glm::rotate(modelMatrix, glm::radians(0.0f), glm::vec3(0.0f, 1.0f, 0.0f));    //              y
+    * modelMatrix = glm::rotate(modelMatrix, glm::radians(0.0f), glm::vec3(0.0f, 0.0f, 1.0f));    //              z
+    * modelMatrix = glm::scale(modelMatrix, glm::vec3(1.0f));                                     //Scaling
+    ***************************************/
+
+    glm::vec3 camPos(0.0f, 0.0f, 1.0f);
+    glm::vec3 worldUp(0.0f, 1.0f, 0.0f);
+    glm::vec3 camFront(0.0f, 0.0f, -1.0f);
+    glm::mat4 viewMatrix(1.0f);
+    viewMatrix = glm::lookAt(camPos, camPos + camFront, worldUp);
+
+    float fov = 90.0f;
+    float nearPlane = 0.1f;
+    float farPlane = 1000.0f;
+    float aspectRatio = static_cast<float>(framebufferWidth) / framebufferHeight;
+    glm::mat4 projectionMatrix(1.0f);
+    projectionMatrix = glm::perspective(glm::radians(fov), aspectRatio, nearPlane, farPlane);
 
     glErrorCall( glUseProgram(coreProgram) );
 
     glErrorCall( glUniformMatrix4fv(glGetUniformLocation(coreProgram, "modelMatrix"), 1, GL_FALSE, glm::value_ptr(modelMatrix)) );
+    glErrorCall( glUniformMatrix4fv(glGetUniformLocation(coreProgram, "viewMatrix"), 1, GL_FALSE, glm::value_ptr(viewMatrix)) );
+    glErrorCall( glUniformMatrix4fv(glGetUniformLocation(coreProgram, "projectionMatrix"), 1, GL_FALSE, glm::value_ptr(projectionMatrix)) );
 
     glErrorCall( glUseProgram(0) );
 
@@ -310,9 +331,15 @@ int main()
         glErrorCall( glUniform1i(glGetUniformLocation(coreProgram, "texture0"), 0) );
         glErrorCall( glUniform1i(glGetUniformLocation(coreProgram, "texture1"), 1) );
 
-        //Rotating around z-axis
-        modelMatrix = glm::rotate(modelMatrix, glm::radians(2.0f), glm::vec3(0.0f, 0.0f, 1.0f));    //              z
-        glErrorCall(glUniformMatrix4fv(glGetUniformLocation(coreProgram, "modelMatrix"), 1, GL_FALSE, glm::value_ptr(modelMatrix)));
+        //Rotating around y-axis
+        modelMatrix = glm::rotate(modelMatrix, glm::radians(2.0f), glm::vec3(0.0f, 1.0f, 0.0f));    //              z
+        glErrorCall( glUniformMatrix4fv(glGetUniformLocation(coreProgram, "modelMatrix"), 1, GL_FALSE, glm::value_ptr(modelMatrix)) );
+        
+        //Setting up camera
+        glfwGetFramebufferSize(window, &framebufferWidth, &framebufferHeight);
+        float aspectRatio = static_cast<float>(framebufferWidth) / framebufferHeight;
+        projectionMatrix = glm::perspective(glm::radians(fov), aspectRatio, nearPlane, farPlane);
+        glErrorCall( glUniformMatrix4fv(glGetUniformLocation(coreProgram, "projectionMatrix"), 1, GL_FALSE, glm::value_ptr(projectionMatrix)) );
 
         //Activate texture unit 0 and bind the texture
         glErrorCall( glActiveTexture(GL_TEXTURE0) );
