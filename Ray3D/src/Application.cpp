@@ -20,10 +20,34 @@ GLuint indices[] = {
 unsigned indexCount = sizeof(indices) / sizeof(GLuint);
 
 
-void UpdateInput(GLFWwindow* window)
+void UpdateInput(GLFWwindow* window, glm::vec3& position, glm::vec3& rotation, glm::vec3& scale)
 {
+    //Closing window
     if (glfwGetKey(window, GLFW_KEY_ESCAPE))
         glfwSetWindowShouldClose(window, GL_TRUE);
+
+    //  MOVEMENT & ROTATION    //
+    //Movement
+    if (glfwGetKey(window, GLFW_KEY_W))
+        position.z -= 0.01f;
+    if (glfwGetKey(window, GLFW_KEY_A))
+        position.x -= 0.01f;
+    if (glfwGetKey(window, GLFW_KEY_S))
+        position.z += 0.01f;
+    if (glfwGetKey(window, GLFW_KEY_D))
+        position.x += 0.01f;
+
+    //Rotation
+    if (glfwGetKey(window, GLFW_KEY_Q))
+        rotation.y -= 1.0f;
+    if (glfwGetKey(window, GLFW_KEY_E))
+        rotation.y += 1.0f;
+    
+    //Scaling
+    if (glfwGetKey(window, GLFW_KEY_Z))
+        scale -= 0.01f;
+    if (glfwGetKey(window, GLFW_KEY_X))
+        scale += 0.01f;
 }
 
 
@@ -276,16 +300,20 @@ int main()
 
 
     //  MVP //
+    glm::vec3 position(0.0f);
+    glm::vec3 rotation(0.0f);
+    glm::vec3 scale(1.0f);
+
     glm::mat4 modelMatrix(1.0f);
 
     /**
     * Functions to alter the texture differently during runtime
     * 
-    * modelMatrix = glm::translate(modelMatrix, glm::vec3(0.0f, 0.0f, 0.0f));                     //Moving
-    * modelMatrix = glm::rotate(modelMatrix, glm::radians(0.0f), glm::vec3(1.0f, 0.0f, 0.0f));    //Rotate around x
-    * modelMatrix = glm::rotate(modelMatrix, glm::radians(0.0f), glm::vec3(0.0f, 1.0f, 0.0f));    //              y
-    * modelMatrix = glm::rotate(modelMatrix, glm::radians(0.0f), glm::vec3(0.0f, 0.0f, 1.0f));    //              z
-    * modelMatrix = glm::scale(modelMatrix, glm::vec3(1.0f));                                     //Scaling
+    * modelMatrix = glm::translate(modelMatrix, position);                     //Moving
+    * modelMatrix = glm::rotate(modelMatrix, glm::radians(rotation.x), glm::vec3(1.0f, 0.0f, 0.0f));    //Rotate around x
+    * modelMatrix = glm::rotate(modelMatrix, glm::radians(rotation.y), glm::vec3(0.0f, 1.0f, 0.0f));    //              y
+    * modelMatrix = glm::rotate(modelMatrix, glm::radians(rotation.z), glm::vec3(0.0f, 0.0f, 1.0f));    //              z
+    * modelMatrix = glm::scale(modelMatrix, scale);                                     //Scaling
     ***************************************/
 
     glm::vec3 camPos(0.0f, 0.0f, 1.0f);
@@ -318,7 +346,7 @@ int main()
         glfwPollEvents();
 
         //  UPDATE  //
-        UpdateInput(window);
+        UpdateInput(window, position, rotation, scale);
 
         
         glErrorCall( glClearColor(0.0f, 0.0f, 0.0f, 1.0f) );
@@ -331,11 +359,14 @@ int main()
         glErrorCall( glUniform1i(glGetUniformLocation(coreProgram, "texture0"), 0) );
         glErrorCall( glUniform1i(glGetUniformLocation(coreProgram, "texture1"), 1) );
 
-        //Rotating around y-axis
-        modelMatrix = glm::rotate(modelMatrix, glm::radians(2.0f), glm::vec3(0.0f, 1.0f, 0.0f));    //              z
+        //Movement, rotation, scaling
+        modelMatrix = glm::mat4(1.0f);
+        modelMatrix = glm::translate(modelMatrix, position);    //Moving
+        modelMatrix = glm::rotate(modelMatrix, glm::radians(rotation.y), glm::vec3(0.0f, 1.0f, 0.0f));  //Rotating around y
+        modelMatrix = glm::scale(modelMatrix, scale);   //Scaling
         glErrorCall( glUniformMatrix4fv(glGetUniformLocation(coreProgram, "modelMatrix"), 1, GL_FALSE, glm::value_ptr(modelMatrix)) );
         
-        //Setting up camera
+        //Handling texture rendering on change in aspect ratio
         glfwGetFramebufferSize(window, &framebufferWidth, &framebufferHeight);
         float aspectRatio = static_cast<float>(framebufferWidth) / framebufferHeight;
         projectionMatrix = glm::perspective(glm::radians(fov), aspectRatio, nearPlane, farPlane);
