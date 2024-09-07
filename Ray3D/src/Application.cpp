@@ -2,6 +2,7 @@
 
 #include "libs.h"
 #include "Renderer.h"
+#include "Shader.h"
 
 
 Vertex vertices[] = {
@@ -57,110 +58,6 @@ void FramebufferResizeCallback(GLFWwindow* window, int fbw, int fbh)
 }
 
 
-bool LoadShaders(GLuint& program)
-{
-    bool loadSuccess = true;
-    char infoLog[512];
-    GLint success;
-
-    std::string temp = "";
-    std::string src = "";
-
-    std::fstream inFile;
-
-    //  Vertex Shader   //
-     //Reading the shader file
-    inFile.open("res/shaders/VertexShader.glsl");
-
-    if (inFile.is_open())
-    {
-        while (std::getline(inFile, temp))
-            src += temp + "\n";
-    }
-    else
-    {
-        std::cout << "ERROR::Application.cpp::LoadShaders(): Failed to load Vertex Shader" << std::endl;
-        loadSuccess = false;
-    }
-
-    inFile.close();
-
-    //Compiling the shader file
-    GLuint vertexShader = glCreateShader(GL_VERTEX_SHADER);
-    const GLchar* v_src = src.c_str();
-    glShaderSource(vertexShader, 1, &v_src, NULL);
-    glCompileShader(vertexShader);
-
-    //Checking for errors during compilation
-    glGetShaderiv(vertexShader, GL_COMPILE_STATUS, &success);
-    if (!success)
-    {
-        glGetShaderInfoLog(vertexShader, 512, NULL, infoLog);
-        std::cout << "ERROR::Application.cpp::LoadShaders(): Failed to compile the vertex shader" << std::endl;
-        std::cout << infoLog << std::endl;
-        loadSuccess = false;
-    }
-
-
-    temp = "";
-    src = "";
-
-    //  Fragment Shader //
-    //Reading the shader file
-    inFile.open("res/shaders/FragmentShader.glsl");
-
-    if (inFile.is_open())
-    {
-        while (std::getline(inFile, temp))
-            src += temp + "\n";
-    }
-    else
-        std::cout << "ERROR::Application.cpp::LoadShaders(): Failed to load Fragment Shader" << std::endl;
-
-    inFile.close();
-
-    //Compiling the shader file
-    GLuint fragmentShader = glCreateShader(GL_FRAGMENT_SHADER);
-    const GLchar* f_src = src.c_str();
-    glShaderSource(fragmentShader, 1, &f_src, NULL);
-    glCompileShader(fragmentShader);
-
-    //Checking for errors during compilation
-    glGetShaderiv(fragmentShader, GL_COMPILE_STATUS, &success);
-    if (!success)
-    {
-        glGetShaderInfoLog(fragmentShader, 512, NULL, infoLog);
-        std::cout << "ERROR::Application.cpp::LoadShaders(): Failed to compile the fragment shader" << std::endl;
-        std::cout << infoLog << std::endl;
-        loadSuccess = false;
-    }
-    
-    //  Linking the Program //
-    program = glCreateProgram();
-
-    glAttachShader(program, vertexShader);
-    glAttachShader(program, fragmentShader);
-    glLinkProgram(program);
-
-    //Error Checking
-    glGetProgramiv(program, GL_LINK_STATUS, &success);
-    if (!success)
-    {
-        glGetProgramInfoLog(program, 512, NULL, infoLog);
-        std::cout << "ERROR::Application.cpp::LoadShaders(): Failed to link the program" << std::endl;
-        std::cout << infoLog << std::endl;
-        loadSuccess = false;
-    }
-
-
-    glErrorCall( glUseProgram(0) );
-    glDeleteShader(vertexShader);
-    glDeleteShader(fragmentShader);
-    
-    return loadSuccess;
-}
-
-
 int main()
 {
     //Initializing GLFW
@@ -213,9 +110,7 @@ int main()
 
 
     //Initializing the shader
-    GLuint coreProgram;
-    if (!LoadShaders(coreProgram))
-        glfwTerminate();
+    Shader coreProgram((char*)"res/shaders/VertexShader.glsl", (char*)"res/shaders/FragmentShader.glsl");
 
     
     GLuint vao;
@@ -340,17 +235,13 @@ int main()
     glm::vec3 lightPos0(0.0f, 0.0f, 1.0f);
 
     //Init Uniforms
-    glErrorCall( glUseProgram(coreProgram) );
-
-    glErrorCall( glUniformMatrix4fv(glGetUniformLocation(coreProgram, "modelMatrix"), 1, GL_FALSE, glm::value_ptr(modelMatrix)) );
-    glErrorCall( glUniformMatrix4fv(glGetUniformLocation(coreProgram, "viewMatrix"), 1, GL_FALSE, glm::value_ptr(viewMatrix)) );
-    glErrorCall( glUniformMatrix4fv(glGetUniformLocation(coreProgram, "projectionMatrix"), 1, GL_FALSE, glm::value_ptr(projectionMatrix)) );
+    coreProgram.SetMat4fv(modelMatrix, "modelMatrix");
+    coreProgram.SetMat4fv(viewMatrix, "viewMatrix");
+    coreProgram.SetMat4fv(projectionMatrix, "projectionMatrix");
     
-    glErrorCall( glUniform3fv(glGetUniformLocation(coreProgram, "lightPos0"), 1, glm::value_ptr(lightPos0)) );
-    glErrorCall( glUniform3fv(glGetUniformLocation(coreProgram, "cameraPos"), 1, glm::value_ptr(camPos)) );
-
-    glErrorCall( glUseProgram(0) );
-
+    coreProgram.SetVec3f(lightPos0, "lightPos0");
+    coreProgram.SetVec3f(camPos, "cameraPos");
+    
 
     Renderer renderer;
 
@@ -366,25 +257,26 @@ int main()
         glErrorCall( glClearColor(0.0f, 0.0f, 0.0f, 1.0f) );
         renderer.Clear();
 
-        glErrorCall( glUseProgram(coreProgram) );
 
         //  Update uniforms   //
         //Textures
-        glErrorCall( glUniform1i(glGetUniformLocation(coreProgram, "texture0"), 0) );
-        glErrorCall( glUniform1i(glGetUniformLocation(coreProgram, "texture1"), 1) );
+        coreProgram.Set1i(0, "texture0");
+        coreProgram.Set1i(1, "texture1");
 
         //Movement, rotation, scaling
         modelMatrix = glm::mat4(1.0f);
         modelMatrix = glm::translate(modelMatrix, position);    //Moving
         modelMatrix = glm::rotate(modelMatrix, glm::radians(rotation.y), glm::vec3(0.0f, 1.0f, 0.0f));  //Rotating around y
         modelMatrix = glm::scale(modelMatrix, scale);   //Scaling
-        glErrorCall( glUniformMatrix4fv(glGetUniformLocation(coreProgram, "modelMatrix"), 1, GL_FALSE, glm::value_ptr(modelMatrix)) );
-        
+        coreProgram.SetMat4fv(modelMatrix, "modelMatrix");
+
         //Handling texture rendering on change in aspect ratio
         glfwGetFramebufferSize(window, &framebufferWidth, &framebufferHeight);
         float aspectRatio = static_cast<float>(framebufferWidth) / framebufferHeight;
         projectionMatrix = glm::perspective(glm::radians(fov), aspectRatio, nearPlane, farPlane);
-        glErrorCall( glUniformMatrix4fv(glGetUniformLocation(coreProgram, "projectionMatrix"), 1, GL_FALSE, glm::value_ptr(projectionMatrix)) );
+        coreProgram.SetMat4fv(modelMatrix, "projectionMatrix");
+
+        coreProgram.Use();
 
         //Activate texture unit 0 and bind the texture
         glErrorCall( glActiveTexture(GL_TEXTURE0) );
@@ -413,7 +305,6 @@ int main()
     glErrorCall( glDeleteVertexArrays(1, &vao) );
     glErrorCall( glDeleteBuffers(1, &vbo) );
     glErrorCall( glDeleteBuffers(1, &ibo) );
-    glErrorCall( glDeleteProgram(coreProgram) );
     glfwDestroyWindow(window);
     glfwTerminate();
 
