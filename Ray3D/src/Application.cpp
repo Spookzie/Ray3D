@@ -337,7 +337,7 @@ int main()
     projectionMatrix = glm::perspective(glm::radians(fov), aspectRatio, nearPlane, farPlane);
 
     //  LIGHTING    //
-    glm::vec3 lightPos0(0.0f, 0.0f, 2.0f);
+    glm::vec3 lightPos0(0.0f, 0.0f, 1.0f);
 
     //Init Uniforms
     glErrorCall( glUseProgram(coreProgram) );
@@ -347,6 +347,7 @@ int main()
     glErrorCall( glUniformMatrix4fv(glGetUniformLocation(coreProgram, "projectionMatrix"), 1, GL_FALSE, glm::value_ptr(projectionMatrix)) );
     
     glErrorCall( glUniform3fv(glGetUniformLocation(coreProgram, "lightPos0"), 1, glm::value_ptr(lightPos0)) );
+    glErrorCall( glUniform3fv(glGetUniformLocation(coreProgram, "cameraPos"), 1, glm::value_ptr(camPos)) );
 
     glErrorCall( glUseProgram(0) );
 
