@@ -5,11 +5,11 @@
 
 
 Vertex vertices[] = {
-    //Position                          //Color                         //Texcoords
-    glm::vec3(-0.5f,  0.5f,  0.0f),     glm::vec3(1.0f, 0.0f, 0.0f),    glm::vec2(0.0f, 1.0f),      //index = 0 |   top left
-    glm::vec3(-0.5f, -0.5f,  0.0f),     glm::vec3(0.0f, 1.0f, 0.0f),    glm::vec2(0.0f, 0.0f),      //        1 |   bottom left
-    glm::vec3( 0.5f, -0.5f,  0.0f),     glm::vec3(0.0f, 0.0f, 1.0f),    glm::vec2(1.0f, 0.0f),      //        2 |   bottom right
-    glm::vec3( 0.5f,  0.5f,  0.0f),     glm::vec3(0.0f, 1.0f, 0.0f),    glm::vec2(1.0f, 1.0f)       //        3 |   top right
+    //Position                          //Color                         //Texcoords                 //Normal      
+    glm::vec3(-0.5f,  0.5f,  0.0f),     glm::vec3(1.0f, 0.0f, 0.0f),    glm::vec2(0.0f, 1.0f),      glm::vec3(0.0f, 0.0f, -1.0f),    //index = 0 |   top left
+    glm::vec3(-0.5f, -0.5f,  0.0f),     glm::vec3(0.0f, 1.0f, 0.0f),    glm::vec2(0.0f, 0.0f),      glm::vec3(0.0f, 0.0f, -1.0f),    //        1 |   bottom left
+    glm::vec3( 0.5f, -0.5f,  0.0f),     glm::vec3(0.0f, 0.0f, 1.0f),    glm::vec2(1.0f, 0.0f),      glm::vec3(0.0f, 0.0f, -1.0f),    //        2 |   bottom right
+    glm::vec3( 0.5f,  0.5f,  0.0f),     glm::vec3(0.0f, 1.0f, 0.0f),    glm::vec2(1.0f, 1.0f),      glm::vec3(0.0f, 0.0f, -1.0f)     //        3 |   top right
 };
 unsigned vertexCount = sizeof(vertices) / sizeof(Vertex);
 
@@ -244,6 +244,10 @@ int main()
     //Texcoord
     glErrorCall( glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, sizeof(Vertex), (GLvoid*)offsetof(Vertex, texcoord)) );
     glErrorCall( glEnableVertexAttribArray(2) );
+    
+    //Normal
+    glErrorCall( glVertexAttribPointer(3, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (GLvoid*)offsetof(Vertex, normal)) );
+    glErrorCall( glEnableVertexAttribArray(3) );
 
 
     // **********************************
@@ -300,6 +304,7 @@ int main()
 
 
     //  MVP //
+    //Init model matrix
     glm::vec3 position(0.0f);
     glm::vec3 rotation(0.0f);
     glm::vec3 scale(1.0f);
@@ -316,12 +321,14 @@ int main()
     * modelMatrix = glm::scale(modelMatrix, scale);                                     //Scaling
     ***************************************/
 
+    //Init view matrix
     glm::vec3 camPos(0.0f, 0.0f, 1.0f);
     glm::vec3 worldUp(0.0f, 1.0f, 0.0f);
     glm::vec3 camFront(0.0f, 0.0f, -1.0f);
     glm::mat4 viewMatrix(1.0f);
     viewMatrix = glm::lookAt(camPos, camPos + camFront, worldUp);
 
+    //Init projection matrix
     float fov = 90.0f;
     float nearPlane = 0.1f;
     float farPlane = 1000.0f;
@@ -329,11 +336,17 @@ int main()
     glm::mat4 projectionMatrix(1.0f);
     projectionMatrix = glm::perspective(glm::radians(fov), aspectRatio, nearPlane, farPlane);
 
+    //  LIGHTING    //
+    glm::vec3 lightPos0(0.0f, 0.0f, 2.0f);
+
+    //Init Uniforms
     glErrorCall( glUseProgram(coreProgram) );
 
     glErrorCall( glUniformMatrix4fv(glGetUniformLocation(coreProgram, "modelMatrix"), 1, GL_FALSE, glm::value_ptr(modelMatrix)) );
     glErrorCall( glUniformMatrix4fv(glGetUniformLocation(coreProgram, "viewMatrix"), 1, GL_FALSE, glm::value_ptr(viewMatrix)) );
     glErrorCall( glUniformMatrix4fv(glGetUniformLocation(coreProgram, "projectionMatrix"), 1, GL_FALSE, glm::value_ptr(projectionMatrix)) );
+    
+    glErrorCall( glUniform3fv(glGetUniformLocation(coreProgram, "lightPos0"), 1, glm::value_ptr(lightPos0)) );
 
     glErrorCall( glUseProgram(0) );
 
