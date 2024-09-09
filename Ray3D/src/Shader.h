@@ -27,8 +27,8 @@ public:
 	Shader(char* vertex_file, char* fragment_file, char* geometry_file = "");
 	~Shader();
 
-	inline void Use() { glErrorCall(glUseProgram(this->id)); };
-	inline void Unuse() { glErrorCall(glUseProgram(0)); };
+	inline void Use() { glErrorCall(glUseProgram(this->id)); }
+	inline void Unuse() { glErrorCall(glUseProgram(0)); }
 
 	//Setting Uniforms
 	void Set1i(GLint value, const GLchar* name);
