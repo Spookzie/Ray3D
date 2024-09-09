@@ -21,6 +21,12 @@ GLuint indices[] = {
 unsigned indexCount = sizeof(indices) / sizeof(GLuint);
 
 
+void FramebufferResizeCallback(GLFWwindow* window, int fbw, int fbh)
+{
+    glViewport(0, 0, fbw, fbh);
+}
+
+
 void UpdateInput(GLFWwindow* window, glm::vec3& position, glm::vec3& rotation, glm::vec3& scale)
 {
     //Closing window
@@ -46,15 +52,9 @@ void UpdateInput(GLFWwindow* window, glm::vec3& position, glm::vec3& rotation, g
     
     //Scaling
     if (glfwGetKey(window, GLFW_KEY_Z))
-        scale -= 0.01f;
-    if (glfwGetKey(window, GLFW_KEY_X))
         scale += 0.01f;
-}
-
-
-void FramebufferResizeCallback(GLFWwindow* window, int fbw, int fbh)
-{
-    glViewport(0, 0, fbw, fbh);
+    if (glfwGetKey(window, GLFW_KEY_X))
+        scale -= 0.01f;
 }
 
 
@@ -110,7 +110,7 @@ int main()
 
 
     //Initializing the shader
-    Shader coreProgram((char*)"res/shaders/VertexShader.glsl", (char*)"res/shaders/FragmentShader.glsl");
+    Shader coreProgram("res/shaders/VertexShader.glsl", "res/shaders/FragmentShader.glsl");
 
     
     GLuint vao;
@@ -146,9 +146,8 @@ int main()
 
 
     // **********************************
-    //  Texture 1   //
-    int imgWidth = 0;
-    int imgHeight = 0;
+    //  Texture 0   //
+    int imgWidth = 0, imgHeight = 0;
     unsigned char* img = SOIL_load_image("res/textures/Spookzie_Logo.png", &imgWidth, &imgHeight, NULL, SOIL_LOAD_RGBA);
 
     GLuint texture0;
@@ -171,9 +170,8 @@ int main()
     else
         std::cout << "ERROR::Application.cpp::main(): Failed to load texture 0" << std::endl;
     
-    //  Texture 2   //
-    int imgWidth1 = 0;
-    int imgHeight1 = 0;
+    //  Texture 1   //
+    int imgWidth1 = 0, imgHeight1 = 0;
     unsigned char* img1 = SOIL_load_image("res/textures/Basketball.png", &imgWidth1, &imgHeight1, NULL, SOIL_LOAD_RGBA);
 
     GLuint texture1;
@@ -206,15 +204,14 @@ int main()
 
     glm::mat4 modelMatrix(1.0f);
 
-    /**
-    * Functions to alter the texture differently during runtime
-    * 
-    * modelMatrix = glm::translate(modelMatrix, position);                     //Moving
-    * modelMatrix = glm::rotate(modelMatrix, glm::radians(rotation.x), glm::vec3(1.0f, 0.0f, 0.0f));    //Rotate around x
-    * modelMatrix = glm::rotate(modelMatrix, glm::radians(rotation.y), glm::vec3(0.0f, 1.0f, 0.0f));    //              y
-    * modelMatrix = glm::rotate(modelMatrix, glm::radians(rotation.z), glm::vec3(0.0f, 0.0f, 1.0f));    //              z
-    * modelMatrix = glm::scale(modelMatrix, scale);                                     //Scaling
-    ***************************************/
+    //* Functions to alter the texture differently during runtime
+    //* 
+    //* modelMatrix = glm::translate(modelMatrix, position);                     //Moving
+    //* modelMatrix = glm::rotate(modelMatrix, glm::radians(rotation.x), glm::vec3(1.0f, 0.0f, 0.0f));    //Rotate around x
+    //* modelMatrix = glm::rotate(modelMatrix, glm::radians(rotation.y), glm::vec3(0.0f, 1.0f, 0.0f));    //              y
+    //* modelMatrix = glm::rotate(modelMatrix, glm::radians(rotation.z), glm::vec3(0.0f, 0.0f, 1.0f));    //              z
+    //* modelMatrix = glm::scale(modelMatrix, scale);                                     //Scaling
+    //**************************************
 
     //Init view matrix
     glm::vec3 camPos(0.0f, 0.0f, 1.0f);
@@ -227,8 +224,8 @@ int main()
     float fov = 90.0f;
     float nearPlane = 0.1f;
     float farPlane = 1000.0f;
-    float aspectRatio = static_cast<float>(framebufferWidth) / framebufferHeight;
     glm::mat4 projectionMatrix(1.0f);
+    float aspectRatio = static_cast<float>(framebufferWidth) / framebufferHeight;
     projectionMatrix = glm::perspective(glm::radians(fov), aspectRatio, nearPlane, farPlane);
 
     //  LIGHTING    //
@@ -253,51 +250,42 @@ int main()
         //  UPDATE  //
         UpdateInput(window, position, rotation, scale);
 
-        
-        glErrorCall( glClearColor(0.0f, 0.0f, 0.0f, 1.0f) );
+        glErrorCall(glClearColor(0.0f, 0.0f, 0.0f, 1.0f));
         renderer.Clear();
 
 
-        //  Update uniforms   //
-        //Textures
+        //Update matrices
+        modelMatrix = glm::mat4(1.0f);
+        modelMatrix = glm::translate(modelMatrix, position); // Moving
+        modelMatrix = glm::rotate(modelMatrix, glm::radians(rotation.y), glm::vec3(0.0f, 1.0f, 0.0f)); // Rotating around y
+        modelMatrix = glm::scale(modelMatrix, scale); // Scaling
+
+        //  Update uniforms  //
+        //Shader uniforms
+        coreProgram.SetMat4fv(modelMatrix, "modelMatrix");
+        coreProgram.SetMat4fv(viewMatrix, "viewMatrix");
+        coreProgram.SetMat4fv(projectionMatrix, "projectionMatrix");
+
+        //Texture uniforms
         coreProgram.Set1i(0, "texture0");
         coreProgram.Set1i(1, "texture1");
 
-        //Movement, rotation, scaling
-        modelMatrix = glm::mat4(1.0f);
-        modelMatrix = glm::translate(modelMatrix, position);    //Moving
-        modelMatrix = glm::rotate(modelMatrix, glm::radians(rotation.y), glm::vec3(0.0f, 1.0f, 0.0f));  //Rotating around y
-        modelMatrix = glm::scale(modelMatrix, scale);   //Scaling
-        coreProgram.SetMat4fv(modelMatrix, "modelMatrix");
-
-        //Handling texture rendering on change in aspect ratio
-        glfwGetFramebufferSize(window, &framebufferWidth, &framebufferHeight);
-        float aspectRatio = static_cast<float>(framebufferWidth) / framebufferHeight;
-        projectionMatrix = glm::perspective(glm::radians(fov), aspectRatio, nearPlane, farPlane);
-        coreProgram.SetMat4fv(modelMatrix, "projectionMatrix");
-
         coreProgram.Use();
 
-        //Activate texture unit 0 and bind the texture
+        //Bind textures
         glErrorCall( glActiveTexture(GL_TEXTURE0) );
         glErrorCall( glBindTexture(GL_TEXTURE_2D, texture0) );
         glErrorCall( glActiveTexture(GL_TEXTURE1) );
         glErrorCall( glBindTexture(GL_TEXTURE_2D, texture1) );
 
+        //Draw
         glErrorCall( glBindVertexArray(vao) );
         glErrorCall( glDrawElements(GL_TRIANGLES, indexCount, GL_UNSIGNED_INT, 0) );
 
 
         glfwSwapBuffers(window);
-
-
-        // Unbinding (if needed)
-        // glErrorCall( glBindVertexArray(0) ); // Only needed if switching VAOs
-        // glErrorCall( glBindBuffer(GL_ARRAY_BUFFER, 0) ); // Only needed if switching VBOs
-        // glErrorCall( glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0) ); // Only needed if switching IBOs
-        // glErrorCall( glUseProgram(0) ); // Only needed if switching programs
-        // glErrorCall( glBindTexture(GL_TEXTURE_2D, 0) ); // Only needed if switching textures
     }
+
 
 
     // Cleanup

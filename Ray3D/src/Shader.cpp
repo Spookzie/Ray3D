@@ -1,18 +1,18 @@
 #include "Shader.h"
 
 
-Shader::Shader(char* vertex_file, char* fragment_file, char* geometry_file )
+Shader::Shader(char* vertex_file, char* fragment_file, char* geometry_file)
 {
     GLuint vertexShader = 0;
     GLuint geometryShader = 0;
     GLuint fragmentShader = 0;
 
-    vertexShader = LoadShader(GL_VERTEX_SHADER, vertex_file);
+    vertexShader = this->LoadShader(GL_VERTEX_SHADER, vertex_file);
 
     if (geometry_file != "")
-        geometryShader = LoadShader(GL_GEOMETRY_SHADER, geometry_file);
+        geometryShader = this->LoadShader(GL_GEOMETRY_SHADER, geometry_file);
     
-    fragmentShader = LoadShader(GL_FRAGMENT_SHADER, fragment_file);
+    fragmentShader = this->LoadShader(GL_FRAGMENT_SHADER, fragment_file);
 
     this->LinkProgram(vertexShader, geometryShader, fragmentShader);
 
@@ -27,13 +27,13 @@ Shader::~Shader()
 }
 
 
-//***************************************
 //  UNIFORMS    //
+//***************************************
 void Shader::Set1i(GLint value, const GLchar* name)
 {
     this->Use();
 
-    glErrorCall( glUniform1i(glGetUniformLocation(this->id, name), 0) );
+    glErrorCall( glUniform1i(glGetUniformLocation(this->id, name), value) );
 
     this->Unuse();
 }
