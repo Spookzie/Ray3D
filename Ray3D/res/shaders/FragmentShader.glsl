@@ -21,31 +21,44 @@ uniform Material material;
 uniform vec3 lightPos0;
 uniform vec3 cameraPos;
 
+//	LIGHTING	//
+//Ambient
+vec3 CalculateAmbient(Material material)
+{
+	return material.ambient;
+}
+
+//Diffuse
+vec3 CalculateDiffuse(Material material, vec3 vs_position, vec3 vs_normal, vec3 light_pos0)
+{
+	vec3 posToLightDirVec = normalize(vs_position - light_pos0);
+	float diffuse = clamp(dot(posToLightDirVec, vs_normal), 0, 1);
+	
+	return (material.diffuse * diffuse);
+}
+
+//Specular
+vec3 CalculateSpecular(Material material, vec3 vs_position, vec3 vs_normal, vec3 light_pos0, vec3 camera_pos)
+{
+	vec3 lightToPosDirVec = normalize(light_pos0 - vs_position);
+	vec3 reflectDirVec = normalize(reflect(lightToPosDirVec, normalize(vs_normal)));
+	vec3 posToViewDirVec = normalize(vs_position - camera_pos);
+	float specularConstant = pow(max(dot(posToViewDirVec, reflectDirVec), 0), 35);
+	
+	return material.specular * specularConstant;
+}
+
 
 void main()
 {
 	//fs_color = vec4(vs_color, 1.0f);
 	//fs_color = texture(texture0, vs_texcoord) * texture(texture1, vs_texcoord);
 
-	//Ambient Light
-	vec3 ambientLight = material.ambient;
-
-	//Diffuse Light
-	vec3 posToLightDirVec = normalize(vs_position - lightPos0);
-	vec3 diffuseColor = vec3(1.0f, 1.0f, 1.0f);
-	float diffuse = clamp(dot(posToLightDirVec, vs_normal), 0, 1);
-	vec3 diffuseFinal = material.diffuse * diffuse;
-
-	//Specular Light
-	vec3 lightToPosDirVec = normalize(lightPos0 - vs_position);
-	vec3 reflectDirVec = normalize(reflect(lightToPosDirVec, normalize(vs_normal)));
-	vec3 posToViewDirVec = normalize(vs_position - cameraPos);
-	float specularConstant = pow(max(dot(posToViewDirVec, reflectDirVec), 0), 35);
-	vec3 specularFinal = material.specular * specularConstant;
-
-	//Attenuation
-
+	//	LIGHTING	//
+	vec3 ambientFinal = CalculateAmbient(material);
+	vec3 diffuseFinal = CalculateDiffuse(material, vs_position, vs_normal, lightPos0);
+	vec3 specularFinal = CalculateSpecular(material, vs_position, vs_normal, lightPos0, cameraPos);
 
 	fs_color = texture(material.diffuseTex, vs_texcoord) *
-		( vec4(ambientLight, 1.0f) + vec4(diffuseFinal, 1.0f) + vec4(specularFinal, 1.0f) );
+		( vec4(ambientFinal, 1.0f) + vec4(diffuseFinal, 1.0f) + vec4(specularFinal, 1.0f) );
 }
