@@ -4,6 +4,7 @@
 #include "Renderer.h"
 #include "Shader.h"
 #include "Texture.h"
+#include "Material.h"
 
 
 Vertex vertices[] = {
@@ -151,6 +152,9 @@ int main()
     Texture texture0("res/textures/Spookzie_Logo.png", GL_TEXTURE_2D, 0);
     Texture texture1("res/textures/Basketball.png", GL_TEXTURE_2D, 1);
 
+    //Initializing the material
+    Material material0(glm::vec3(0.1f), glm::vec3(1.0f), glm::vec3(1.0f), texture0.GetTextureUnit(), texture1.GetTextureUnit());
+
 
     //  MVP //
     //Init model matrix
@@ -176,7 +180,7 @@ int main()
 
 
     //  LIGHTING    //
-    glm::vec3 lightPos0(0.0f, 0.0f, 1.0f);
+    glm::vec3 lightPos0(1.0f, 1.0f, 1.0f);
 
 
     //Init Uniforms
@@ -217,6 +221,8 @@ int main()
         //Texture uniforms
         shader.Set1i(texture0.GetTextureUnit(), "texture0");
         shader.Set1i(texture1.GetTextureUnit(), "texture1");
+
+        material0.SendToShader(shader);
 
         shader.Use();
 
