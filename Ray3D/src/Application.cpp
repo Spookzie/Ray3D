@@ -16,13 +16,13 @@ Vertex vertices[] = {
     glm::vec3( 0.5f, -0.5f,  0.0f),     glm::vec3(0.0f, 0.0f, 1.0f),    glm::vec2(1.0f, 0.0f),      glm::vec3(0.0f, 0.0f, 1.0f),    //        2 |   bottom right
     glm::vec3( 0.5f,  0.5f,  0.0f),     glm::vec3(0.0f, 1.0f, 0.0f),    glm::vec2(1.0f, 1.0f),      glm::vec3(0.0f, 0.0f, 1.0f)     //        3 |   top right
 };
-unsigned vertexCount = sizeof(vertices) / sizeof(Vertex);
+unsigned int vertexCount = sizeof(vertices) / sizeof(Vertex);
 
 GLuint indices[] = {
     0, 1, 2,    //Bottom Left triangle
     0, 2, 3     //Top right triangle
 };
-unsigned indexCount = sizeof(indices) / sizeof(GLuint);
+unsigned int indexCount = sizeof(indices) / sizeof(GLuint);
 
 
 void FramebufferResizeCallback(GLFWwindow* window, int fbw, int fbh)
@@ -31,7 +31,7 @@ void FramebufferResizeCallback(GLFWwindow* window, int fbw, int fbh)
 }
 
 
-void UpdateInput(GLFWwindow* window, glm::vec3& position, glm::vec3& rotation, glm::vec3& scale)
+void UpdateInput(GLFWwindow* window, Mesh& mesh)
 {
     //Closing window
     if (glfwGetKey(window, GLFW_KEY_ESCAPE))
@@ -40,25 +40,25 @@ void UpdateInput(GLFWwindow* window, glm::vec3& position, glm::vec3& rotation, g
     //  MOVEMENT & ROTATION    //
     //Movement
     if (glfwGetKey(window, GLFW_KEY_W))
-        position.z -= 0.01f;
+        mesh.Move(glm::vec3(0.0f, 0.0f, -0.01f));
     if (glfwGetKey(window, GLFW_KEY_A))
-        position.x -= 0.01f;
+        mesh.Move(glm::vec3(-0.01f, 0.0f, 0.0f));
     if (glfwGetKey(window, GLFW_KEY_S))
-        position.z += 0.01f;
+        mesh.Move(glm::vec3(0.0f, 0.0f, 0.01f));
     if (glfwGetKey(window, GLFW_KEY_D))
-        position.x += 0.01f;
+        mesh.Move(glm::vec3(0.01f, 0.0f, 0.0f));
 
     //Rotation
     if (glfwGetKey(window, GLFW_KEY_Q))
-        rotation.y -= 1.0f;
+        mesh.Rotate(glm::vec3(0.0f, -1.0f, 0.0f));
     if (glfwGetKey(window, GLFW_KEY_E))
-        rotation.y += 1.0f;
+        mesh.Rotate(glm::vec3(0.0f, 1.0f, 0.0f));
     
     //Scaling
     if (glfwGetKey(window, GLFW_KEY_Z))
-        scale += 0.01f;
+        mesh.Scale(glm::vec3(0.01f));
     if (glfwGetKey(window, GLFW_KEY_X))
-        scale -= 0.01f;
+        mesh.Scale(glm::vec3(-0.01f));
 }
 
 
@@ -119,39 +119,6 @@ int main()
     //Initializing the mesh
     Mesh mesh(vertices, vertexCount, indices, indexCount);
 
-    
-    GLuint vao;
-    glErrorCall( glCreateVertexArrays(1, &vao) );
-    glErrorCall( glBindVertexArray(vao) );
-
-    GLuint vbo;
-    glErrorCall( glGenBuffers(1, &vbo) );
-    glErrorCall( glBindBuffer(GL_ARRAY_BUFFER, vbo) );
-    glErrorCall( glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW) );
-
-    GLuint ibo;
-    glErrorCall( glGenBuffers(1, &ibo) );
-    glErrorCall( glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ibo) );
-    glErrorCall( glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices), indices, GL_STATIC_DRAW) );
-
-
-    //  Setting up vertex attribute pointers   //
-    //Position
-    glErrorCall( glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (GLvoid*)offsetof(Vertex, position)) );
-    glErrorCall( glEnableVertexAttribArray(0) );
-
-    //Color
-    glErrorCall( glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (GLvoid*)offsetof(Vertex, color)) );
-    glErrorCall( glEnableVertexAttribArray(1) );
-
-    //Texcoord
-    glErrorCall( glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, sizeof(Vertex), (GLvoid*)offsetof(Vertex, texcoord)) );
-    glErrorCall( glEnableVertexAttribArray(2) );
-    
-    //Normal
-    glErrorCall( glVertexAttribPointer(3, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (GLvoid*)offsetof(Vertex, normal)) );
-    glErrorCall( glEnableVertexAttribArray(3) );
-
 
     //Initialzing Textures
     Texture texture0("res/textures/Spookzie_Logo.png", GL_TEXTURE_2D, 0);
@@ -161,14 +128,7 @@ int main()
     Material material0(glm::vec3(0.1f), glm::vec3(1.0f), glm::vec3(1.0f), texture0.GetTextureUnit(), texture1.GetTextureUnit());
 
 
-    //  MVP //
-    //Init model matrix
-    glm::vec3 position(0.0f);
-    glm::vec3 rotation(0.0f);
-    glm::vec3 scale(1.0f);
-    glm::mat4 modelMatrix(1.0f);
-
-    //Init view matrix
+    //Camera
     glm::vec3 camPos(0.0f, 0.0f, 1.0f);
     glm::vec3 worldUp(0.0f, 1.0f, 0.0f);
     glm::vec3 camFront(0.0f, 0.0f, -1.0f);
@@ -189,7 +149,6 @@ int main()
 
 
     //Init Uniforms
-    shader.SetMat4fv(modelMatrix, "modelMatrix");
     shader.SetMat4fv(viewMatrix, "viewMatrix");
     shader.SetMat4fv(projectionMatrix, "projectionMatrix");
     
@@ -205,21 +164,14 @@ int main()
         glfwPollEvents();
 
         //  UPDATE  //
-        UpdateInput(window, position, rotation, scale);
+        UpdateInput(window, mesh);
 
         glErrorCall(glClearColor(0.0f, 0.0f, 0.0f, 1.0f));
         renderer.Clear();
 
 
-        //Update matrices
-        modelMatrix = glm::mat4(1.0f);
-        modelMatrix = glm::translate(modelMatrix, position); // Moving
-        modelMatrix = glm::rotate(modelMatrix, glm::radians(rotation.y), glm::vec3(0.0f, 1.0f, 0.0f)); // Rotating around y
-        modelMatrix = glm::scale(modelMatrix, scale); // Scaling
-
         //  Update uniforms  //
         //Shader uniforms
-        shader.SetMat4fv(modelMatrix, "modelMatrix");
         shader.SetMat4fv(viewMatrix, "viewMatrix");
         shader.SetMat4fv(projectionMatrix, "projectionMatrix");
 
@@ -235,10 +187,6 @@ int main()
         texture0.Bind();
         texture1.Bind();
 
-        //Draw
-        glErrorCall( glBindVertexArray(vao) );
-        glErrorCall( glDrawElements(GL_TRIANGLES, indexCount, GL_UNSIGNED_INT, 0) );
-
         mesh.Render(&shader);
 
 
@@ -246,11 +194,7 @@ int main()
     }
 
 
-
     // Cleanup
-    glErrorCall( glDeleteVertexArrays(1, &vao) );
-    glErrorCall( glDeleteBuffers(1, &vbo) );
-    glErrorCall( glDeleteBuffers(1, &ibo) );
     glfwDestroyWindow(window);
     glfwTerminate();
 
