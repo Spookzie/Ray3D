@@ -5,14 +5,16 @@
 #include "Shader.h"
 #include "Texture.h"
 #include "Material.h"
+#include "Vertex.h"
+#include "Mesh.h"
 
 
 Vertex vertices[] = {
     //Position                          //Color                         //Texcoords                 //Normal      
-    glm::vec3(-0.5f,  0.5f,  0.0f),     glm::vec3(1.0f, 0.0f, 0.0f),    glm::vec2(0.0f, 1.0f),      glm::vec3(0.0f, 0.0f, -1.0f),    //index = 0 |   top left
-    glm::vec3(-0.5f, -0.5f,  0.0f),     glm::vec3(0.0f, 1.0f, 0.0f),    glm::vec2(0.0f, 0.0f),      glm::vec3(0.0f, 0.0f, -1.0f),    //        1 |   bottom left
-    glm::vec3( 0.5f, -0.5f,  0.0f),     glm::vec3(0.0f, 0.0f, 1.0f),    glm::vec2(1.0f, 0.0f),      glm::vec3(0.0f, 0.0f, -1.0f),    //        2 |   bottom right
-    glm::vec3( 0.5f,  0.5f,  0.0f),     glm::vec3(0.0f, 1.0f, 0.0f),    glm::vec2(1.0f, 1.0f),      glm::vec3(0.0f, 0.0f, -1.0f)     //        3 |   top right
+    glm::vec3(-0.5f,  0.5f,  0.0f),     glm::vec3(1.0f, 0.0f, 0.0f),    glm::vec2(0.0f, 1.0f),      glm::vec3(0.0f, 0.0f, 1.0f),    //index = 0 |   top left
+    glm::vec3(-0.5f, -0.5f,  0.0f),     glm::vec3(0.0f, 1.0f, 0.0f),    glm::vec2(0.0f, 0.0f),      glm::vec3(0.0f, 0.0f, 1.0f),    //        1 |   bottom left
+    glm::vec3( 0.5f, -0.5f,  0.0f),     glm::vec3(0.0f, 0.0f, 1.0f),    glm::vec2(1.0f, 0.0f),      glm::vec3(0.0f, 0.0f, 1.0f),    //        2 |   bottom right
+    glm::vec3( 0.5f,  0.5f,  0.0f),     glm::vec3(0.0f, 1.0f, 0.0f),    glm::vec2(1.0f, 1.0f),      glm::vec3(0.0f, 0.0f, 1.0f)     //        3 |   top right
 };
 unsigned vertexCount = sizeof(vertices) / sizeof(Vertex);
 
@@ -113,6 +115,9 @@ int main()
 
     //Initializing the shader
     Shader shader("res/shaders/VertexShader.glsl", "res/shaders/FragmentShader.glsl");
+
+    //Initializing the mesh
+    Mesh mesh(vertices, vertexCount, indices, indexCount);
 
     
     GLuint vao;
@@ -233,6 +238,8 @@ int main()
         //Draw
         glErrorCall( glBindVertexArray(vao) );
         glErrorCall( glDrawElements(GL_TRIANGLES, indexCount, GL_UNSIGNED_INT, 0) );
+
+        mesh.Render(&shader);
 
 
         glfwSwapBuffers(window);
