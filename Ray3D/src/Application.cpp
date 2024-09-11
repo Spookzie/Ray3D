@@ -1,6 +1,5 @@
 #pragma once
 
-#include "libs.h"
 #include "Renderer.h"
 #include "Shader.h"
 #include "Texture.h"
