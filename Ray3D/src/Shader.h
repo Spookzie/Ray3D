@@ -1,5 +1,7 @@
 #pragma once
 
+#include "Renderer.h"
+
 #include <iostream>
 #include <fstream>
 #include <string>
@@ -12,8 +14,6 @@
 #include <glm/vec4.hpp>
 #include <glm/mat4x4.hpp>
 #include <glm/gtc/type_ptr.hpp>
-
-#include "Renderer.h"
 
 
 class Shader

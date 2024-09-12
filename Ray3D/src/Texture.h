@@ -1,12 +1,12 @@
 #pragma once
 
+#include "Renderer.h"
+
 #include <iostream>
 #include <string>
 
 #include <GLFW/glfw3.h>
 #include <SOIL2.h>
-
-#include "Renderer.h"
 
 
 class Texture

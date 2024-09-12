@@ -11,6 +11,16 @@ Mesh::Mesh(Vertex* vertex_array, const unsigned int& vertex_count, GLuint* index
     this->UpdateModelMatrix();
 }
 
+Mesh::Mesh(Primitive* primitive, glm::vec3 position, glm::vec3 rotation, glm::vec3 scale)
+{
+    this->position = position;
+    this->rotation = rotation;
+    this->scale = scale;
+
+    this->Init_vao(primitive);
+    this->UpdateModelMatrix();
+}
+
 Mesh::~Mesh()
 {
     glErrorCall( glDeleteVertexArrays(1, &this->vao) );
@@ -73,6 +83,43 @@ void Mesh::Init_vao(Vertex* vertex_array, const unsigned int& vertex_count, GLui
     //Normal
     glErrorCall( glVertexAttribPointer(3, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (GLvoid*)offsetof(Vertex, normal)));
     glErrorCall( glEnableVertexAttribArray(3));
+}
+
+
+void Mesh::Init_vao(Primitive* primitive)
+{
+    this->vertexCount = primitive->GetVertexCount();
+    this->indexCount = primitive->GetIndexCount();
+
+    //Creating VAO, VBO, & IBO
+    glErrorCall( glCreateVertexArrays(1, &this->vao) );
+    glErrorCall( glBindVertexArray(this->vao) );
+
+    glErrorCall( glGenBuffers(1, &this->vbo) );
+    glErrorCall( glBindBuffer(GL_ARRAY_BUFFER, this->vbo) ) ;
+    glErrorCall( glBufferData(GL_ARRAY_BUFFER, this->vertexCount * sizeof(Vertex), primitive->GetVertices(), GL_STATIC_DRAW) );
+
+    glErrorCall( glGenBuffers(1, &this->ibo) );
+    glErrorCall( glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, this->ibo) );
+    glErrorCall( glBufferData(GL_ELEMENT_ARRAY_BUFFER, this->indexCount * sizeof(GLuint), primitive->GetIndices(), GL_STATIC_DRAW) );
+
+
+    //  Setting up vertex attribute pointers   //
+    //Position
+    glErrorCall(glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (GLvoid*)offsetof(Vertex, position)));
+    glErrorCall(glEnableVertexAttribArray(0));
+
+    //Color
+    glErrorCall(glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (GLvoid*)offsetof(Vertex, color)));
+    glErrorCall(glEnableVertexAttribArray(1));
+
+    //Texcoord
+    glErrorCall(glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, sizeof(Vertex), (GLvoid*)offsetof(Vertex, texcoord)));
+    glErrorCall(glEnableVertexAttribArray(2));
+
+    //Normal
+    glErrorCall(glVertexAttribPointer(3, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (GLvoid*)offsetof(Vertex, normal)));
+    glErrorCall(glEnableVertexAttribArray(3));
 }
 //***************************************
 

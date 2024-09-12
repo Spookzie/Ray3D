@@ -6,6 +6,7 @@
 #include "Material.h"
 #include "Vertex.h"
 #include "Mesh.h"
+#include "Primitive.h"
 
 
 Vertex vertices[] = {
@@ -116,7 +117,7 @@ int main()
     Shader shader("res/shaders/VertexShader.glsl", "res/shaders/FragmentShader.glsl");
 
     //Initializing the mesh
-    Mesh mesh(vertices, vertexCount, indices, indexCount);
+    Mesh mesh(&Quad()/*vertices, vertexCount, indices, indexCount*/);
 
 
     //Initialzing Textures
