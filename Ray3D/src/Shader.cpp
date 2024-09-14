@@ -1,7 +1,8 @@
 #include "Shader.h"
 
 
-Shader::Shader(char* vertex_file, char* fragment_file, char* geometry_file)
+Shader::Shader(const int version_major, const int version_minor, char* vertex_file, char* fragment_file, char* geometry_file)
+    : versionMajor(version_major), versionMinor(version_minor)
 {
     GLuint vertexShader = 0;
     GLuint geometryShader = 0;
@@ -113,6 +114,10 @@ std::string Shader::LoadShaderSource(char* file_name)
         std::cout << "ERROR::Shader.cpp::LoadShaderSource(): Failed to load file: " << file_name << std::endl;
 
     inFile.close();
+
+    std::string version = std::to_string(this->versionMajor) + std::to_string(this->versionMinor) + "0";
+    src.replace(src.find("#version"), 12, ("#version " + version));
+    //std::cout << src << std::endl;
 
     return src;
 }

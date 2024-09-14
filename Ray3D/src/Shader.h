@@ -20,10 +20,12 @@ class Shader
 {
 private:
 	GLuint id;
+	const int versionMajor, versionMinor;
 
 public:
 	//Constructor & Destructor
-	Shader(char* vertex_file, char* fragment_file, char* geometry_file = "");
+	Shader(const int version_major, const int version_minor,
+		char* vertex_file, char* fragment_file, char* geometry_file = "");
 	~Shader();
 
 	inline void Use() { glErrorCall(glUseProgram(this->id)); }

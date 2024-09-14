@@ -9,22 +9,6 @@
 #include "Primitive.h"
 
 
-Vertex vertices[] = {
-    //Position                          //Color                         //Texcoords                 //Normal      
-    glm::vec3(-0.5f,  0.5f,  0.0f),     glm::vec3(1.0f, 0.0f, 0.0f),    glm::vec2(0.0f, 1.0f),      glm::vec3(0.0f, 0.0f, 1.0f),    //index = 0 |   top left
-    glm::vec3(-0.5f, -0.5f,  0.0f),     glm::vec3(0.0f, 1.0f, 0.0f),    glm::vec2(0.0f, 0.0f),      glm::vec3(0.0f, 0.0f, 1.0f),    //        1 |   bottom left
-    glm::vec3( 0.5f, -0.5f,  0.0f),     glm::vec3(0.0f, 0.0f, 1.0f),    glm::vec2(1.0f, 0.0f),      glm::vec3(0.0f, 0.0f, 1.0f),    //        2 |   bottom right
-    glm::vec3( 0.5f,  0.5f,  0.0f),     glm::vec3(0.0f, 1.0f, 0.0f),    glm::vec2(1.0f, 1.0f),      glm::vec3(0.0f, 0.0f, 1.0f)     //        3 |   top right
-};
-unsigned int vertexCount = sizeof(vertices) / sizeof(Vertex);
-
-GLuint indices[] = {
-    0, 1, 2,    //Bottom Left triangle
-    0, 2, 3     //Top right triangle
-};
-unsigned int indexCount = sizeof(indices) / sizeof(GLuint);
-
-
 void FramebufferResizeCallback(GLFWwindow* window, int fbw, int fbh)
 {
     glViewport(0, 0, fbw, fbh);
@@ -62,6 +46,29 @@ void UpdateInput(GLFWwindow* window, Mesh& mesh)
 }
 
 
+GLFWwindow* CreateWindow(const char* title, const unsigned int width, const unsigned int height,
+    int& fb_width, int& fb_height,
+    const int gl_major_version, const int gl_minor_version,
+    GLboolean is_resizable)
+{
+    //Setting up OpenGL Profile
+    glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
+    glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, gl_major_version);
+    glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, gl_minor_version);
+    glfwWindowHint(GLFW_RESIZABLE, is_resizable);
+
+    GLFWwindow* window = glfwCreateWindow(width, height, title, NULL, NULL);
+
+    glfwGetFramebufferSize(window, &fb_width, &fb_height);
+    glfwSetFramebufferSizeCallback(window, FramebufferResizeCallback);
+
+    glfwMakeContextCurrent(window);
+    glfwSwapInterval(1);    //Enabling v-sync
+
+    return window;
+}
+
+
 int main()
 {
     //Initializing GLFW
@@ -70,24 +77,14 @@ int main()
 
 
     //  CREATING WINDOW //
+    const int glMajorVersion = 4;
+    const int glMinorVersion = 5;
     const unsigned int windowWidth = 640;
     const unsigned int windowHeight = 480;
-    int framebufferWidth = 0;
-    int framebufferHeight = 0;
+    int framebufferWidth = windowWidth;
+    int framebufferHeight = windowHeight;
 
-    //Setting up OpenGL Profile
-    glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
-    glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
-    glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
-    glfwWindowHint(GLFW_RESIZABLE, GL_TRUE);
-
-    GLFWwindow* window = glfwCreateWindow(windowWidth, windowHeight, "Ray3D", NULL, NULL);
-
-    glfwGetFramebufferSize(window, &framebufferWidth, &framebufferHeight);
-    glfwSetFramebufferSizeCallback(window, FramebufferResizeCallback);
-
-    glfwMakeContextCurrent(window);
-    glfwSwapInterval(1);    //Enabling v-sync
+    GLFWwindow* window = CreateWindow("Ray3D", windowWidth, windowHeight, framebufferWidth, framebufferHeight, glMajorVersion, glMinorVersion, GL_TRUE);
 
 
     //Initializing GLEW
@@ -114,10 +111,10 @@ int main()
 
 
     //Initializing the shader
-    Shader shader("res/shaders/VertexShader.glsl", "res/shaders/FragmentShader.glsl");
+    Shader shader(glMajorVersion, glMinorVersion, "res/shaders/VertexShader.glsl", "res/shaders/FragmentShader.glsl");
 
     //Initializing the mesh
-    Mesh mesh(&Quad()/*vertices, vertexCount, indices, indexCount*/);
+    Mesh mesh(&Quad());
 
 
     //Initialzing Textures
