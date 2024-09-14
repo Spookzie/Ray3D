@@ -20,7 +20,7 @@ private:
 public:
 	//Constructor & Destructor
 	Texture(const char* file_name, GLenum type, GLint texture_unit);
-	~Texture();
+	virtual ~Texture();
 
 	inline GLuint GetID() const { return this->id; };
 

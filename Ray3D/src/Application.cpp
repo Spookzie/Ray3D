@@ -1,18 +1,6 @@
 #pragma once
 
-#include "Renderer.h"
-#include "Shader.h"
-#include "Texture.h"
-#include "Material.h"
-#include "Vertex.h"
-#include "Mesh.h"
-#include "Primitive.h"
-
-
-void FramebufferResizeCallback(GLFWwindow* window, int fbw, int fbh)
-{
-    glViewport(0, 0, fbw, fbh);
-}
+#include "Game.h"
 
 
 void UpdateInput(GLFWwindow* window, Mesh& mesh)
@@ -60,7 +48,7 @@ GLFWwindow* CreateWindow(const char* title, const unsigned int width, const unsi
     GLFWwindow* window = glfwCreateWindow(width, height, title, NULL, NULL);
 
     glfwGetFramebufferSize(window, &fb_width, &fb_height);
-    glfwSetFramebufferSizeCallback(window, FramebufferResizeCallback);
+    glfwSetFramebufferSizeCallback(window, Game::FramebufferResizeCallback);
 
     glfwMakeContextCurrent(window);
     glfwSwapInterval(1);    //Enabling v-sync

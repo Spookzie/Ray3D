@@ -27,7 +27,7 @@ public:
 		glm::vec3 position = glm::vec3(0.0f), glm::vec3 rotation= glm::vec3(0.0f), glm::vec3 scale = glm::vec3(1.0f));
 
 	Mesh(Primitive* primitive, glm::vec3 position = glm::vec3(0.0f), glm::vec3 rotation= glm::vec3(0.0f), glm::vec3 scale = glm::vec3(1.0f));
-	~Mesh();
+	virtual ~Mesh();
 
 	void Update();
 	void Render(Shader* shader);

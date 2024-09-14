@@ -26,7 +26,7 @@ public:
 	//Constructor & Destructor
 	Shader(const int version_major, const int version_minor,
 		char* vertex_file, char* fragment_file, char* geometry_file = "");
-	~Shader();
+	virtual ~Shader();
 
 	inline void Use() { glErrorCall(glUseProgram(this->id)); }
 	inline void Unuse() { glErrorCall(glUseProgram(0)); }

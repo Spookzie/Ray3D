@@ -17,7 +17,7 @@ private:
 public:
 	//Constructor & Destructor
 	Primitive();
-	~Primitive();
+	virtual ~Primitive();
 
 	void Set(const Vertex* vertices, const unsigned int vertexCount, const GLuint* indices, const unsigned int indexCount);
 
