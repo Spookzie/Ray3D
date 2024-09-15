@@ -15,17 +15,14 @@ private:
 	GLuint id;
 	int width, height;
 	unsigned int type;
-	GLint textureUnit;
 
 public:
 	//Constructor & Destructor
-	Texture(const char* file_name, GLenum type, GLint texture_unit);
+	Texture(const char* file_name, GLenum type);
 	virtual ~Texture();
 
 	inline GLuint GetID() const { return this->id; };
 
-	void Bind();
+	void Bind(const GLint texture_unit);
 	inline void Unbind() { glErrorCall(glBindTexture(this->type, 0)); }
-
-	inline GLint GetTextureUnit() const { return this->textureUnit; }
 };

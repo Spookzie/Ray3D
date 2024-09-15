@@ -68,6 +68,7 @@ public:
 	
 	inline static void FramebufferResizeCallback(GLFWwindow* window, int fbw, int fbh) { glViewport(0, 0, fbw, fbh); };
 
+	static void UpdateInput(GLFWwindow* window, Mesh& mesh);
 
 private:
 	//Initializers
@@ -82,4 +83,6 @@ private:
 	void Init_Meshes();
 	void Init_Lights();
 	void Init_Uniforms();
+
+	void UpdateUniforms();
 };

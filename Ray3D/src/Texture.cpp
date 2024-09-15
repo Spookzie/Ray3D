@@ -1,10 +1,9 @@
 #include "Texture.h"
 
 
-Texture::Texture(const char* file_name, GLenum type, GLint texture_unit)
+Texture::Texture(const char* file_name, GLenum type)
 {
     this->type = type;
-    this->textureUnit = texture_unit;
 
     unsigned char* img = SOIL_load_image(file_name, &this->width, &this->height, NULL, SOIL_LOAD_RGBA);
 
@@ -37,8 +36,8 @@ Texture::~Texture()
 }
 
 
-void Texture::Bind()
+void Texture::Bind(const GLint texture_unit)
 {
-    glErrorCall( glActiveTexture(GL_TEXTURE0 + this->textureUnit) );
+    glErrorCall( glActiveTexture(GL_TEXTURE0 + texture_unit) );
     glErrorCall( glBindTexture(this->type, this->id) );
 }

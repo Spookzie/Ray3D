@@ -25,7 +25,7 @@ void Game::Init_Window(const char* title, GLboolean is_resizable)
     }
 
     glfwGetFramebufferSize(this->window, &this->framebufferWidth, &this->framebufferHeight);
-    glfwSetFramebufferSizeCallback(this->window, Game::FramebufferResizeCallback);
+    glfwSetFramebufferSizeCallback(this->window, this->FramebufferResizeCallback);
 
     glfwMakeContextCurrent(this->window);
     glfwSwapInterval(1);    //Enabling v-sync
@@ -77,15 +77,13 @@ void Game::Init_Shaders()
 
 void Game::Init_Textures()
 {
-    this->textures.push_back(new Texture("res/textures/Spookzie_Logo.png", GL_TEXTURE_2D, 0));
-    this->textures.push_back(new Texture("res/textures/Basketball.png", GL_TEXTURE_2D, 1));
+    this->textures.push_back(new Texture("res/textures/Spookzie_Logo.png", GL_TEXTURE_2D));
+    this->textures.push_back(new Texture("res/textures/Basketball.png", GL_TEXTURE_2D));
 }
 
 void Game::Init_Materials()
 {
-    this->materials.push_back( new Material(glm::vec3(0.1f), glm::vec3(1.0f), glm::vec3(1.0f), 
-        this->textures[TEX_LOGO_0]->GetTextureUnit(),
-        this->textures[TEX_BALL_1]->GetTextureUnit()) );
+    this->materials.push_back(new Material(glm::vec3(0.1f), glm::vec3(1.0f), glm::vec3(1.0f), 0, 1));
 }
 
 void Game::Init_Meshes()
@@ -166,33 +164,70 @@ Game::~Game()
 void Game::Update()
 {
     glfwPollEvents();
+    this->UpdateInput(this->window, *this->meshes[MESH_QUAD]);
 }
+
 
 void Game::Render()
 {
+    //Clear
     glErrorCall(glClearColor(0.0f, 0.0f, 0.0f, 1.0f));
     renderer.Clear();
 
+    //Update the uniforms
+    this->UpdateUniforms();
 
-    //  Update uniforms  //
+    //Use a program
+    this->shaders[SHADER_CORE_PROGRAM]->Use();
+
+    //Bind textures
+    this->textures[TEX_LOGO_0]->Bind(0);
+    this->textures[TEX_BALL_1]->Bind(1);
+
+    //Draw
+    this->meshes[MESH_QUAD]->Render(this->shaders[SHADER_CORE_PROGRAM]);
+
+    //End draw
+    glfwSwapBuffers(window);
+}
+
+
+void Game::UpdateInput(GLFWwindow* window, Mesh& mesh)
+{
+    //Closing window
+    if (glfwGetKey(window, GLFW_KEY_ESCAPE))
+        glfwSetWindowShouldClose(window, GL_TRUE);
+
+    //  MOVEMENT & ROTATION    //
+    //Movement
+    if (glfwGetKey(window, GLFW_KEY_W))
+        mesh.Move(glm::vec3(0.0f, 0.0f, -0.01f));
+    if (glfwGetKey(window, GLFW_KEY_A))
+        mesh.Move(glm::vec3(-0.01f, 0.0f, 0.0f));
+    if (glfwGetKey(window, GLFW_KEY_S))
+        mesh.Move(glm::vec3(0.0f, 0.0f, 0.01f));
+    if (glfwGetKey(window, GLFW_KEY_D))
+        mesh.Move(glm::vec3(0.01f, 0.0f, 0.0f));
+
+    //Rotation
+    if (glfwGetKey(window, GLFW_KEY_Q))
+        mesh.Rotate(glm::vec3(0.0f, -1.0f, 0.0f));
+    if (glfwGetKey(window, GLFW_KEY_E))
+        mesh.Rotate(glm::vec3(0.0f, 1.0f, 0.0f));
+
+    //Scaling
+    if (glfwGetKey(window, GLFW_KEY_Z))
+        mesh.Scale(glm::vec3(0.01f));
+    if (glfwGetKey(window, GLFW_KEY_X))
+        mesh.Scale(glm::vec3(-0.01f));
+}
+
+
+void Game::UpdateUniforms()
+{
     //Shader uniforms
     this->shaders[SHADER_CORE_PROGRAM]->SetMat4fv(this->viewMatrix, "viewMatrix");
     this->shaders[SHADER_CORE_PROGRAM]->SetMat4fv(this->projectionMatrix, "projectionMatrix");
 
-    //Texture uniforms
-    this->shaders[SHADER_CORE_PROGRAM]->Set1i(this->textures[TEX_LOGO_0]->GetTextureUnit(), "texture0");
-    this->shaders[SHADER_CORE_PROGRAM]->Set1i(this->textures[TEX_BALL_1]->GetTextureUnit(), "texture1");
-
     this->materials[MAT_1]->SendToShader(*this->shaders[SHADER_CORE_PROGRAM]);
-
-    this->shaders[SHADER_CORE_PROGRAM]->Use();
-
-    //Bind textures
-    this->textures[TEX_LOGO_0]->Bind();
-    this->textures[TEX_BALL_1]->Bind();
-
-    this->meshes[MESH_QUAD]->Render(this->shaders[SHADER_CORE_PROGRAM]);
-
-
-    glfwSwapBuffers(window);
 }
