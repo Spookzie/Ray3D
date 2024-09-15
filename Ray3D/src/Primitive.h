@@ -42,3 +42,11 @@ public:
 	//Constructor & Destructor
 	Triangle();
 };
+
+
+class Pyramid : public Primitive
+{
+public:
+	//Constructor & Destructor
+	Pyramid();
+};

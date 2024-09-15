@@ -1,8 +1,8 @@
 #include "Primitive.h"
 
 
-//**************************************************
 //	PRIMITIVE CLASS	//
+//**************************************************
 Primitive::Primitive()
 {
 }
@@ -23,8 +23,8 @@ void Primitive::Set(const Vertex* vertices, const unsigned int vertexCount, cons
 //**************************************************
 
 
-//**************************************************
 //	QUAD CLASS	//
+//**************************************************
 Quad::Quad()
 {
     Vertex vertices[] = {
@@ -68,5 +68,42 @@ Triangle::Triangle()
 
 
     this->Set(vertices, vertexCount, indices, indexCount);
+}
+//**************************************************
+
+
+//	PYRAMID CLASS	//
+//**************************************************
+Pyramid::Pyramid()
+{
+    Vertex vertices[] = {
+        //Position								//Color							//Texcoords					//Normals
+        //Triangle front 
+        //Normal here is z = 1 because the triangle facing us
+        glm::vec3(0.f, 0.5f, 0.f),				glm::vec3(1.f, 0.f, 0.f),		glm::vec2(0.5f, 1.f),		glm::vec3(0.f, 0.f, 1.f),   //Top
+        glm::vec3(-0.5f, -0.5f, 0.5f),			glm::vec3(0.f, 1.f, 0.f),		glm::vec2(0.f, 0.f),		glm::vec3(0.f, 0.f, 1.f),   //Front Bottom Left
+        glm::vec3(0.5f, -0.5f, 0.5f),			glm::vec3(0.f, 0.f, 1.f),		glm::vec2(1.f, 0.f),		glm::vec3(0.f, 0.f, 1.f),   //Front Bottom Right
+
+        //Triangle left
+        //Normal here is x = -1 because the triangle facing left
+        glm::vec3(0.f, 0.5f, 0.f),				glm::vec3(1.f, 1.f, 0.f),		glm::vec2(0.5f, 1.f),		glm::vec3(-1.f, 0.f, 0.f),  //Top
+        glm::vec3(-0.5f, -0.5f, -0.5f),			glm::vec3(0.f, 0.f, 1.f),		glm::vec2(0.f, 0.f),		glm::vec3(-1.f, 0.f, 0.f),  //Back Bottom Left
+        glm::vec3(-0.5f, -0.5f, 0.5f),			glm::vec3(0.f, 0.f, 1.f),		glm::vec2(1.f, 0.f),		glm::vec3(-1.f, 0.f, 0.f),  //Front Bottom Left
+
+        //Triangle back
+        //Normal here is z = -1 because the triangle facing back
+        glm::vec3(0.f, 0.5f, 0.f),				glm::vec3(1.f, 1.f, 0.f),		glm::vec2(0.5f, 1.f),		glm::vec3(0.f, 0.f, -1.f),  //Top
+        glm::vec3(0.5f, -0.5f, -0.5f),			glm::vec3(0.f, 0.f, 1.f),		glm::vec2(0.f, 0.f),		glm::vec3(0.f, 0.f, -1.f),  //Back Bottom Right
+        glm::vec3(-0.5f, -0.5f, -0.5f),			glm::vec3(0.f, 0.f, 1.f),		glm::vec2(1.f, 0.f),		glm::vec3(0.f, 0.f, -1.f),  //Back Bottom Left
+
+        //Triangles right
+        //Normal here is x = 1 because the triangle facing right
+        glm::vec3(0.f, 0.5f, 0.f),				glm::vec3(1.f, 1.f, 0.f),		glm::vec2(0.5f, 1.f),		glm::vec3(1.f, 0.f, 0.f),   //Top
+        glm::vec3(0.5f, -0.5f, 0.5f),			glm::vec3(0.f, 0.f, 1.f),		glm::vec2(0.f, 0.f),		glm::vec3(1.f, 0.f, 0.f),   //Front Bottom Right
+        glm::vec3(0.5f, -0.5f, -0.5f),			glm::vec3(0.f, 0.f, 1.f),		glm::vec2(1.f, 0.f),		glm::vec3(1.f, 0.f, 0.f),   //Back Bottom Right
+    };
+    unsigned vertexCount = sizeof(vertices) / sizeof(Vertex);
+
+    this->Set(vertices, vertexCount, nullptr, 0);
 }
 //**************************************************

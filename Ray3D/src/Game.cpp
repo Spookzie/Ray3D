@@ -93,7 +93,7 @@ void Game::Init_Materials()
 
 void Game::Init_Meshes()
 {
-    this->meshes.push_back( new Mesh(&Quad()) );
+    this->meshes.push_back( new Mesh(&Pyramid()) );
 }
 
 void Game::Init_Lights()

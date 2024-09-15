@@ -25,7 +25,9 @@ Mesh::~Mesh()
 {
     glErrorCall( glDeleteVertexArrays(1, &this->vao) );
     glErrorCall( glDeleteBuffers(1, &this->vbo) );
-    glErrorCall( glDeleteBuffers(1, &this->ibo) );
+    
+    if (this->indexCount > 0)
+        glErrorCall( glDeleteBuffers(1, &this->ibo) );
 }
 
 
@@ -43,7 +45,13 @@ void Mesh::Render(Shader* shader)
     shader->Use();
 
     glErrorCall( glBindVertexArray(this->vao) );
-    glErrorCall( glDrawElements(GL_TRIANGLES, this->indexCount, GL_UNSIGNED_INT, 0));
+
+    if (this->indexCount == 0)
+    {
+        glErrorCall(glDrawArrays(GL_TRIANGLES, 0, this->vertexCount));
+    }
+    else
+        glErrorCall( glDrawElements(GL_TRIANGLES, this->indexCount, GL_UNSIGNED_INT, 0));
 }
 
 
@@ -62,9 +70,12 @@ void Mesh::Init_vao(Vertex* vertex_array, const unsigned int& vertex_count, GLui
     glErrorCall( glBindBuffer(GL_ARRAY_BUFFER, this->vbo) );
     glErrorCall( glBufferData(GL_ARRAY_BUFFER, this->vertexCount * sizeof(Vertex), vertex_array, GL_STATIC_DRAW) );
 
-    glErrorCall( glGenBuffers(1, &this->ibo) );
-    glErrorCall( glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, this->ibo) );
-    glErrorCall( glBufferData(GL_ELEMENT_ARRAY_BUFFER, this->indexCount * sizeof(GLuint), index_array, GL_STATIC_DRAW) );
+    if (this->indexCount > 0)
+    {
+        glErrorCall( glGenBuffers(1, &this->ibo) );
+        glErrorCall( glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, this->ibo) );
+        glErrorCall( glBufferData(GL_ELEMENT_ARRAY_BUFFER, this->indexCount * sizeof(GLuint), index_array, GL_STATIC_DRAW) );
+    }
 
 
     //  Setting up vertex attribute pointers   //
@@ -85,7 +96,6 @@ void Mesh::Init_vao(Vertex* vertex_array, const unsigned int& vertex_count, GLui
     glErrorCall( glEnableVertexAttribArray(3));
 }
 
-
 void Mesh::Init_vao(Primitive* primitive)
 {
     this->vertexCount = primitive->GetVertexCount();
@@ -99,9 +109,12 @@ void Mesh::Init_vao(Primitive* primitive)
     glErrorCall( glBindBuffer(GL_ARRAY_BUFFER, this->vbo) ) ;
     glErrorCall( glBufferData(GL_ARRAY_BUFFER, this->vertexCount * sizeof(Vertex), primitive->GetVertices(), GL_STATIC_DRAW) );
 
-    glErrorCall( glGenBuffers(1, &this->ibo) );
-    glErrorCall( glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, this->ibo) );
-    glErrorCall( glBufferData(GL_ELEMENT_ARRAY_BUFFER, this->indexCount * sizeof(GLuint), primitive->GetIndices(), GL_STATIC_DRAW) );
+    if (this->indexCount > 0)
+    {
+        glErrorCall( glGenBuffers(1, &this->ibo) );
+        glErrorCall( glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, this->ibo) );
+        glErrorCall( glBufferData(GL_ELEMENT_ARRAY_BUFFER, this->indexCount * sizeof(GLuint), primitive->GetIndices(), GL_STATIC_DRAW) );
+    }
 
 
     //  Setting up vertex attribute pointers   //
