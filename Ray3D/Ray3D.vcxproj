@@ -423,7 +423,9 @@
   </ItemGroup>
   <ItemGroup>
     <Image Include="res\textures\Basketball.png" />
+    <Image Include="res\textures\Basketball_Specular.png" />
     <Image Include="res\textures\Spookzie_Logo.png" />
+    <Image Include="res\textures\Spookzie_Logo_Specular.png" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

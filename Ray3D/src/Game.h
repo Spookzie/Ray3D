@@ -11,7 +11,7 @@
 
 //	ENUMS	//
 enum shader_enum{ SHADER_CORE_PROGRAM = 0};
-enum texture_enum{ TEX_LOGO_0 = 0, TEX_BALL_1};
+enum texture_enum{ TEX_LOGO = 0, TEX_LOGO_SPECULAR, TEX_BALL, TEX_BALL_SPECULAR};
 enum material_enum{ MAT_1 = 0};
 enum mesh_enum{MESH_QUAD = 0};
 

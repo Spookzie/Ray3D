@@ -45,7 +45,7 @@ vec3 CalculateSpecular(Material material, vec3 vs_position, vec3 vs_normal, vec3
 	vec3 posToViewDirVec = normalize(camera_pos - vs_position);
 	float specularConstant = pow(max(dot(posToViewDirVec, reflectDirVec), 0), 35);
 	
-	return material.specular * specularConstant;
+	return material.specular * specularConstant * texture(material.specularTex, vs_texcoord).rgb;
 }
 
 

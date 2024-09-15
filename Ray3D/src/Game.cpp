@@ -77,8 +77,13 @@ void Game::Init_Shaders()
 
 void Game::Init_Textures()
 {
+    //Texture 0
     this->textures.push_back(new Texture("res/textures/Spookzie_Logo.png", GL_TEXTURE_2D));
+    this->textures.push_back(new Texture("res/textures/Spookzie_Logo_Specular.png", GL_TEXTURE_2D));
+
+    //Texture 0
     this->textures.push_back(new Texture("res/textures/Basketball.png", GL_TEXTURE_2D));
+    this->textures.push_back(new Texture("res/textures/Basketball_Specular.png", GL_TEXTURE_2D));
 }
 
 void Game::Init_Materials()
@@ -181,8 +186,8 @@ void Game::Render()
     this->shaders[SHADER_CORE_PROGRAM]->Use();
 
     //Bind textures
-    this->textures[TEX_LOGO_0]->Bind(0);
-    this->textures[TEX_BALL_1]->Bind(1);
+    this->textures[TEX_LOGO]->Bind(0);
+    this->textures[TEX_LOGO_SPECULAR]->Bind(1);
 
     //Draw
     this->meshes[MESH_QUAD]->Render(this->shaders[SHADER_CORE_PROGRAM]);
@@ -208,6 +213,10 @@ void Game::UpdateInput(GLFWwindow* window, Mesh& mesh)
         mesh.Move(glm::vec3(0.0f, 0.0f, 0.01f));
     if (glfwGetKey(window, GLFW_KEY_D))
         mesh.Move(glm::vec3(0.01f, 0.0f, 0.0f));
+    if(glfwGetKey(window, GLFW_KEY_UP))
+        mesh.Move(glm::vec3(0.0f, 0.01f, 0.0f));
+    if(glfwGetKey(window, GLFW_KEY_DOWN))
+        mesh.Move(glm::vec3(0.0f, -0.01f, 0.0f));
 
     //Rotation
     if (glfwGetKey(window, GLFW_KEY_Q))
