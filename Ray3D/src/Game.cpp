@@ -166,10 +166,32 @@ Game::~Game()
 }
 
 
+void Game::UpdateInput()
+{
+    //Quit
+    if (glfwGetKey(this->window, GLFW_KEY_ESCAPE))
+        glfwSetWindowShouldClose(this->window, GL_TRUE);
+
+    //Mesh movement
+    if (glfwGetKey(this->window, GLFW_KEY_W))
+        this->camPos.z += 0.03f;
+    if (glfwGetKey(this->window, GLFW_KEY_A))
+        this->camPos.x += 0.03f;
+    if (glfwGetKey(this->window, GLFW_KEY_S))
+        this->camPos.z -= 0.03f;
+    if (glfwGetKey(this->window, GLFW_KEY_D))
+        this->camPos.x -= 0.03f;
+    if (glfwGetKey(this->window, GLFW_KEY_UP))
+        this->camPos.y -= 0.03f;
+    if (glfwGetKey(this->window, GLFW_KEY_DOWN))
+        this->camPos.y += 0.03f;
+}
+
+
 void Game::Update()
 {
     glfwPollEvents();
-    this->UpdateInput(this->window, *this->meshes[MESH_QUAD]);
+    this->UpdateInput();
 }
 
 
@@ -197,43 +219,10 @@ void Game::Render()
 }
 
 
-void Game::UpdateInput(GLFWwindow* window, Mesh& mesh)
-{
-    //Closing window
-    if (glfwGetKey(window, GLFW_KEY_ESCAPE))
-        glfwSetWindowShouldClose(window, GL_TRUE);
-
-    //  MOVEMENT & ROTATION    //
-    //Movement
-    if (glfwGetKey(window, GLFW_KEY_W))
-        mesh.Move(glm::vec3(0.0f, 0.0f, -0.01f));
-    if (glfwGetKey(window, GLFW_KEY_A))
-        mesh.Move(glm::vec3(-0.01f, 0.0f, 0.0f));
-    if (glfwGetKey(window, GLFW_KEY_S))
-        mesh.Move(glm::vec3(0.0f, 0.0f, 0.01f));
-    if (glfwGetKey(window, GLFW_KEY_D))
-        mesh.Move(glm::vec3(0.01f, 0.0f, 0.0f));
-    if(glfwGetKey(window, GLFW_KEY_UP))
-        mesh.Move(glm::vec3(0.0f, 0.01f, 0.0f));
-    if(glfwGetKey(window, GLFW_KEY_DOWN))
-        mesh.Move(glm::vec3(0.0f, -0.01f, 0.0f));
-
-    //Rotation
-    if (glfwGetKey(window, GLFW_KEY_Q))
-        mesh.Rotate(glm::vec3(0.0f, -1.0f, 0.0f));
-    if (glfwGetKey(window, GLFW_KEY_E))
-        mesh.Rotate(glm::vec3(0.0f, 1.0f, 0.0f));
-
-    //Scaling
-    if (glfwGetKey(window, GLFW_KEY_Z))
-        mesh.Scale(glm::vec3(0.01f));
-    if (glfwGetKey(window, GLFW_KEY_X))
-        mesh.Scale(glm::vec3(-0.01f));
-}
-
-
 void Game::UpdateUniforms()
 {
+    this->viewMatrix = glm::lookAt(this->camPos, this->camPos + this->camFront, this->worldUp);
+
     //Shader uniforms
     this->shaders[SHADER_CORE_PROGRAM]->SetMat4fv(this->viewMatrix, "viewMatrix");
     this->shaders[SHADER_CORE_PROGRAM]->SetMat4fv(this->projectionMatrix, "projectionMatrix");

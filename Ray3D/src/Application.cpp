@@ -12,9 +12,7 @@ int main()
     while (!game.GetWindowShouldClose())
     {
         game.Update();
-        game.Render();
-
-        
+        game.Render();        
     }
 
     return 0;

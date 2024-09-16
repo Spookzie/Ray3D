@@ -61,14 +61,15 @@ public:
 	inline int GetWindowShouldClose() { return glfwWindowShouldClose(this->window); }
 
 	//Modifiers
-	inline void SetWindowShouldClose() { glfwSetWindowShouldClose(window, GL_TRUE); }
+	inline void SetWindowShouldClose() { glfwSetWindowShouldClose(this->window, GL_TRUE); }
+
+	void UpdateInput();
 
 	void Update();
 	void Render();
 	
 	inline static void FramebufferResizeCallback(GLFWwindow* window, int fbw, int fbh) { glViewport(0, 0, fbw, fbh); };
 
-	static void UpdateInput(GLFWwindow* window, Mesh& mesh);
 
 private:
 	//Initializers
