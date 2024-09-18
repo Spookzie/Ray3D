@@ -52,8 +52,11 @@ void Game::Init_OpenGLOptions()
                  
     glErrorCall( glEnable(GL_BLEND) );
     glErrorCall( glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA) );
-                 
+           
     glErrorCall( glPolygonMode(GL_FRONT_AND_BACK, GL_FILL) );
+
+    //Input
+    glErrorCall( glfwSetInputMode(this->window, GLFW_CURSOR, GLFW_CURSOR_DISABLED) );
 }
 
 void Game::Init_Matrices()
@@ -121,6 +124,20 @@ Game::Game(const char* title, const unsigned int width, const unsigned int heigh
     this->framebufferWidth = this->windowWidth;
     this->framebufferHeight = this->windowHeight;
 
+    //Delta time
+    this->deltaTime = 0.0f;
+    this->currentTime = 0.0f;
+    this->lastTime = 0.0f;
+
+    //Mouse input
+    this->lastMouseX = 0.0;
+    this->lastMouseY = 0.0;
+    this->mouseX = 0.0;
+    this->mouseY = 0.0;
+    this->mouseOffsetX = 0.0;
+    this->mouseOffsetY = 0.0;
+    this->firstMouse = true;
+
     //Matrices
     this->camPos = glm::vec3(0.0f, 0.0f, 1.0f);
     this->worldUp = glm::vec3(0.0f, 1.0f, 0.0f);
@@ -166,7 +183,29 @@ Game::~Game()
 }
 
 
-void Game::UpdateInput()
+//	PLAYER INPUT    //
+//***************************************
+void Game::MouseInput()
+{
+    glfwGetCursorPos(this->window, &this->mouseX, &this->mouseY);
+
+    if (this->firstMouse)
+    {
+        this->lastMouseX = this->mouseX;
+        this->lastMouseY = this->mouseY;
+        this->firstMouse = false;
+    }
+
+    //Calculate offset
+    this->mouseOffsetX = this->mouseX - this->lastMouseX;
+    this->mouseOffsetY = this->mouseY - this->lastMouseY;
+
+    //Update last position
+    this->lastMouseX = this->mouseX;
+    this->lastMouseY = this->mouseY;
+}
+
+void Game::KeyboardInput()
 {
     //Quit
     if (glfwGetKey(this->window, GLFW_KEY_ESCAPE))
@@ -187,10 +226,19 @@ void Game::UpdateInput()
         this->camPos.y += 0.03f;
 }
 
+void Game::UpdateInput()
+{
+    glfwPollEvents();
+
+    this->KeyboardInput();
+    this->MouseInput();
+}
+//***************************************
+
 
 void Game::Update()
 {
-    glfwPollEvents();
+    this->UpdateDeltaTime();
     this->UpdateInput();
 }
 
@@ -228,4 +276,12 @@ void Game::UpdateUniforms()
     this->shaders[SHADER_CORE_PROGRAM]->SetMat4fv(this->projectionMatrix, "projectionMatrix");
 
     this->materials[MAT_1]->SendToShader(*this->shaders[SHADER_CORE_PROGRAM]);
+}
+
+
+void Game::UpdateDeltaTime()
+{
+    this->currentTime = static_cast<float>(glfwGetTime());
+    this->deltaTime = this->currentTime - this->lastTime;
+    this->lastTime = this->currentTime;
 }

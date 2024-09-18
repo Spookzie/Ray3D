@@ -30,25 +30,26 @@ private:
 	//OpenGL Context
 	const int glMajorVersion, glMinorVersion;
 
+	//Delta time
+	float deltaTime, currentTime, lastTime;
+
+	//Mouse input
+	double lastMouseX, lastMouseY, mouseX, mouseY, mouseOffsetX, mouseOffsetY;
+	bool firstMouse;
+
 	//Matrices
 	glm::mat4 viewMatrix;
 	glm::vec3 camPos, worldUp, camFront;
 	glm::mat4 projectionMatrix;
 	float fov, nearPlane, farPlane;
 
-	//Shaders
+	//Drawing
 	std::vector<Shader*> shaders;
-
-	//Textures
 	std::vector<Texture*> textures;
-
-	//Materials
 	std::vector<Material*> materials;
-
-	//Meshes
 	std::vector<Mesh*> meshes;
 
-	//Lights
+	//Lighting
 	std::vector<glm::vec3*> lights;
 
 
@@ -63,6 +64,8 @@ public:
 	//Modifiers
 	inline void SetWindowShouldClose() { glfwSetWindowShouldClose(this->window, GL_TRUE); }
 
+	void MouseInput();
+	void KeyboardInput();
 	void UpdateInput();
 
 	void Update();
@@ -85,5 +88,6 @@ private:
 	void Init_Lights();
 	void Init_Uniforms();
 
+	void UpdateDeltaTime();
 	void UpdateUniforms();
 };
