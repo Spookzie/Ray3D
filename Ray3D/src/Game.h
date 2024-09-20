@@ -7,6 +7,7 @@
 #include "Vertex.h"
 #include "Mesh.h"
 #include "Primitive.h"
+#include "Camera.h"
 
 
 //	ENUMS	//
@@ -37,6 +38,9 @@ private:
 	double lastMouseX, lastMouseY, mouseX, mouseY, mouseOffsetX, mouseOffsetY;
 	bool firstMouse;
 
+	//Camera
+	Camera camera;
+
 	//Matrices
 	glm::mat4 viewMatrix;
 	glm::vec3 camPos, worldUp, camFront;
@@ -64,15 +68,17 @@ public:
 	//Modifiers
 	inline void SetWindowShouldClose() { glfwSetWindowShouldClose(this->window, GL_TRUE); }
 
+	//	UPDATE	//
+	//Player Input
 	void MouseInput();
 	void KeyboardInput();
 	void UpdateInput();
 
 	void Update();
+
+	//	RENDER	//
 	void Render();
 	
-	inline static void FramebufferResizeCallback(GLFWwindow* window, int fbw, int fbh) { glViewport(0, 0, fbw, fbh); };
-
 
 private:
 	//Initializers
@@ -88,6 +94,9 @@ private:
 	void Init_Lights();
 	void Init_Uniforms();
 
+	//Update
 	void UpdateDeltaTime();
 	void UpdateUniforms();
+	
+	inline static void FramebufferResizeCallback(GLFWwindow* window, int fbw, int fbh) { glViewport(0, 0, fbw, fbh); };
 };

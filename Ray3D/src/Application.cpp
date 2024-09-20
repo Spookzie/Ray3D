@@ -5,7 +5,7 @@
 
 int main()
 {
-    Game game("Ray3D", 640, 480, 4, 5, true);    
+    Game game("Ray3D", 1280, 720, 3, 3, true);    
 
 
     //  GAME LOOP   //

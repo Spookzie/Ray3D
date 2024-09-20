@@ -110,13 +110,13 @@ void Game::Init_Uniforms()
     this->shaders[SHADER_CORE_PROGRAM]->SetMat4fv(this->projectionMatrix, "projectionMatrix");
 
     this->shaders[SHADER_CORE_PROGRAM]->SetVec3f(*this->lights[0], "lightPos0");
-    this->shaders[SHADER_CORE_PROGRAM]->SetVec3f(this->camPos, "cameraPos");
 }
 //***************************************
 
 
 Game::Game(const char* title, const unsigned int width, const unsigned int height, const int gl_major_version, const int gl_minor_version, bool is_resizable)
-    : windowWidth(width), windowHeight(height), glMajorVersion(gl_major_version), glMinorVersion(gl_minor_version)
+    : windowWidth(width), windowHeight(height), glMajorVersion(gl_major_version), glMinorVersion(gl_minor_version),
+        camera(glm::vec3(0.0f, 0.0f, 1.0f), glm::vec3(0.0f, 0.0f, 1.0f), glm::vec3(0.0f, 1.0f, 0.0f))
 {
     //  Init Variables  //
     //Window
@@ -213,17 +213,17 @@ void Game::KeyboardInput()
 
     //Mesh movement
     if (glfwGetKey(this->window, GLFW_KEY_W))
-        this->camPos.z += 0.03f;
+        this->camera.Move(this->deltaTime, FORWARD);
     if (glfwGetKey(this->window, GLFW_KEY_A))
-        this->camPos.x += 0.03f;
+        this->camera.Move(this->deltaTime, LEFT);
     if (glfwGetKey(this->window, GLFW_KEY_S))
-        this->camPos.z -= 0.03f;
+        this->camera.Move(this->deltaTime, BACKWARD);
     if (glfwGetKey(this->window, GLFW_KEY_D))
-        this->camPos.x -= 0.03f;
+        this->camera.Move(this->deltaTime, RIGHT);
     if (glfwGetKey(this->window, GLFW_KEY_UP))
-        this->camPos.y -= 0.03f;
+        this->camPos.y -= 0.02f;
     if (glfwGetKey(this->window, GLFW_KEY_DOWN))
-        this->camPos.y += 0.03f;
+        this->camPos.y += 0.02f;
 }
 
 void Game::UpdateInput()
@@ -232,6 +232,8 @@ void Game::UpdateInput()
 
     this->KeyboardInput();
     this->MouseInput();
+
+    this->camera.UpdateInput(this->deltaTime, -1, this->mouseOffsetX, this->mouseOffsetY);
 }
 //***************************************
 
@@ -269,11 +271,12 @@ void Game::Render()
 
 void Game::UpdateUniforms()
 {
-    this->viewMatrix = glm::lookAt(this->camPos, this->camPos + this->camFront, this->worldUp);
+    this->viewMatrix = this->camera.GetViewMatrix();
 
     //Shader uniforms
     this->shaders[SHADER_CORE_PROGRAM]->SetMat4fv(this->viewMatrix, "viewMatrix");
     this->shaders[SHADER_CORE_PROGRAM]->SetMat4fv(this->projectionMatrix, "projectionMatrix");
+    this->shaders[SHADER_CORE_PROGRAM]->SetVec3f(this->camera.GetPosition(), "cameraPos");
 
     this->materials[MAT_1]->SendToShader(*this->shaders[SHADER_CORE_PROGRAM]);
 }
