@@ -50,3 +50,11 @@ public:
 	//Constructor & Destructor
 	Pyramid();
 };
+
+
+class Cube : public Primitive
+{
+public:
+	//Constructor & Destructor
+	Cube();
+};

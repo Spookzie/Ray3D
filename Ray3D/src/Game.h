@@ -8,6 +8,7 @@
 #include "Mesh.h"
 #include "Primitive.h"
 #include "Camera.h"
+#include "Model.h"
 
 
 //	ENUMS	//
@@ -52,6 +53,7 @@ private:
 	std::vector<Texture*> textures;
 	std::vector<Material*> materials;
 	std::vector<Mesh*> meshes;
+	std::vector < Model*> models;
 
 	//Lighting
 	std::vector<glm::vec3*> lights;
@@ -91,6 +93,7 @@ private:
 	void Init_Textures();
 	void Init_Materials();
 	void Init_Meshes();
+	void Init_Models();
 	void Init_Lights();
 	void Init_Uniforms();
 

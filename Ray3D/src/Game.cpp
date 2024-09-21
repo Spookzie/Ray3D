@@ -97,6 +97,17 @@ void Game::Init_Materials()
 void Game::Init_Meshes()
 {
     this->meshes.push_back( new Mesh(&Pyramid()) );
+    this->meshes.push_back( new Mesh(&Quad()) );
+}
+
+void Game::Init_Models()
+{
+    this->models.push_back(new Model(
+        glm::vec3(0.0f),
+        this->materials[0],
+        this->textures[TEX_LOGO],
+        this->textures[TEX_LOGO_SPECULAR],
+        this->meshes));
 }
 
 void Game::Init_Lights()
@@ -157,6 +168,7 @@ Game::Game(const char* title, const unsigned int width, const unsigned int heigh
     this->Init_Textures();
     this->Init_Materials();
     this->Init_Meshes();
+    this->Init_Models();
     this->Init_Lights();
     this->Init_Uniforms();
 }
@@ -177,6 +189,9 @@ Game::~Game()
 
     for (size_t i = 0; i < this->meshes.size(); i++)
         delete this->meshes[i];
+
+    for (auto*& i : this->models)
+        delete i;
     
     for (size_t i = 0; i < this->lights.size(); i++)
         delete this->lights[i];
@@ -254,15 +269,8 @@ void Game::Render()
     //Update the uniforms
     this->UpdateUniforms();
 
-    //Use a program
-    this->shaders[SHADER_CORE_PROGRAM]->Use();
-
-    //Bind textures
-    this->textures[TEX_LOGO]->Bind(0);
-    this->textures[TEX_LOGO_SPECULAR]->Bind(1);
-
-    //Draw
-    this->meshes[MESH_QUAD]->Render(this->shaders[SHADER_CORE_PROGRAM]);
+    //Render models
+    this->models[0]->Render(this->shaders[SHADER_CORE_PROGRAM]);
 
     //End draw
     glfwSwapBuffers(window);

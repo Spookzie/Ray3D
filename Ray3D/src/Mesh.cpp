@@ -52,6 +52,11 @@ void Mesh::Render(Shader* shader)
     }
     else
         glErrorCall( glDrawElements(GL_TRIANGLES, this->indexCount, GL_UNSIGNED_INT, 0));
+
+    //Unbind
+    glErrorCall( glBindVertexArray(0) );
+    glErrorCall( glUseProgram(0) );
+    glErrorCall( glBindTexture(GL_TEXTURE_2D, 0) );
 }
 
 
