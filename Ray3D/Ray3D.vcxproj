@@ -428,6 +428,8 @@
   <ItemGroup>
     <Image Include="res\textures\Basketball.png" />
     <Image Include="res\textures\Basketball_Specular.png" />
+    <Image Include="res\textures\Bleach.png" />
+    <Image Include="res\textures\Bleach_Specular.png" />
     <Image Include="res\textures\Spookzie_Logo.png" />
     <Image Include="res\textures\Spookzie_Logo_Specular.png" />
   </ItemGroup>

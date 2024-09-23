@@ -867,5 +867,11 @@
     <Image Include="res\textures\Spookzie_Logo_Specular.png">
       <Filter>Resource Files</Filter>
     </Image>
+    <Image Include="res\textures\Bleach_Specular.png">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="res\textures\Bleach.png">
+      <Filter>Resource Files</Filter>
+    </Image>
   </ItemGroup>
 </Project>

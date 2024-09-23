@@ -13,7 +13,7 @@
 
 //	ENUMS	//
 enum shader_enum{ SHADER_CORE_PROGRAM = 0};
-enum texture_enum{ TEX_LOGO = 0, TEX_LOGO_SPECULAR, TEX_BALL, TEX_BALL_SPECULAR};
+enum texture_enum{ TEX_LOGO = 0, TEX_LOGO_SPECULAR, TEX_BALL, TEX_BALL_SPECULAR, TEX_BLEACH, TEX_BLEACH_SPECULAR};
 enum material_enum{ MAT_1 = 0};
 enum mesh_enum{MESH_QUAD = 0};
 
@@ -52,7 +52,6 @@ private:
 	std::vector<Shader*> shaders;
 	std::vector<Texture*> textures;
 	std::vector<Material*> materials;
-	std::vector<Mesh*> meshes;
 	std::vector < Model*> models;
 
 	//Lighting

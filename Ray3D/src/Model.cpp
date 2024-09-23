@@ -6,12 +6,25 @@ Model::Model(glm::vec3 position, Material* material, Texture* orTex_dif, Texture
 {
 	for (auto* i : meshes)
 		this->meshes.push_back(new Mesh(*i));
+
+    for (auto& i : this->meshes)
+    {
+        i->Move(this->pos);
+        i->SetOrigin(this->pos);
+    }
 }
 
 Model::~Model()
 {
 	for (auto* i : this->meshes)
 		delete i;
+}
+
+
+void Model::Rotate(const glm::vec3 rotation)
+{
+    for (auto& i : this->meshes)
+        i->Rotate(rotation);
 }
 
 
