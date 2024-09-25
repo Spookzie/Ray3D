@@ -20,6 +20,7 @@ private:
 	glm::mat4 viewMatrix;
 
 	glm::vec3 worldUp, pos, front, up, right;
+	//Up is the upward direction relative to the camera (used to maintain the camera's orientation).
 
 	GLfloat pitch, yaw, roll;
 	GLfloat moveSpeed, sensitivity;

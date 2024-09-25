@@ -83,13 +83,24 @@ void Camera::UpdateInput(const float& delta_time, const int direction, const dou
 //***************************************
 
 
+/****************************************
+* To understand the maths, check out this page:
+* https://learnopengl.com/Getting-started/Camera
+****************************************/
 void Camera::UpdateCameraVectors()
 {
+	//Calculating the front vector (camera facing direction)
 	this->front.x = cos(glm::radians(this->yaw)) * cos(glm::radians(this->pitch));
 	this->front.y = sin(glm::radians(this->pitch));
 	this->front.z = sin(glm::radians(this->yaw)) * cos(glm::radians(this->pitch));
 
 	this->front = glm::normalize(this->front);
+
+	//Calculating the right vector (camera's right direction)
+	//Cross product of front & up gives a direction perpendicular to both i.e. right
 	this->right = glm::normalize(glm::cross(this->front, this->worldUp));
+
+	//Calculating the up direction (camera's up direction)
+	//Cross product of right & front gives up
 	this->up = glm::normalize(glm::cross(this->right, this->front));
 }

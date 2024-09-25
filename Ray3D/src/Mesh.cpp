@@ -21,20 +21,20 @@ void Mesh::Init_vao()
 
     //  Setting up vertex attribute pointers   //
     //Position
-    glErrorCall(glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (GLvoid*)offsetof(Vertex, position)));
-    glErrorCall(glEnableVertexAttribArray(0));
-
-    //Color
-    glErrorCall(glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (GLvoid*)offsetof(Vertex, color)));
-    glErrorCall(glEnableVertexAttribArray(1));
-
-    //Texcoord
-    glErrorCall(glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, sizeof(Vertex), (GLvoid*)offsetof(Vertex, texcoord)));
-    glErrorCall(glEnableVertexAttribArray(2));
-
-    //Normal
-    glErrorCall(glVertexAttribPointer(3, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (GLvoid*)offsetof(Vertex, normal)));
-    glErrorCall(glEnableVertexAttribArray(3));
+    glErrorCall( glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (GLvoid*)offsetof(Vertex, position)) );
+    glErrorCall( glEnableVertexAttribArray(0) );
+                 
+    //Color      
+    glErrorCall( glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (GLvoid*)offsetof(Vertex, color)) );
+    glErrorCall( glEnableVertexAttribArray(1) );
+                 
+    //Texcoord   
+    glErrorCall( glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, sizeof(Vertex), (GLvoid*)offsetof(Vertex, texcoord)) );
+    glErrorCall( glEnableVertexAttribArray(2) );
+                 
+    //Normal     
+    glErrorCall( glVertexAttribPointer(3, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (GLvoid*)offsetof(Vertex, normal)) );
+    glErrorCall( glEnableVertexAttribArray(3) );
 }
 
 
@@ -115,8 +115,7 @@ Mesh::~Mesh()
 
 
 void Mesh::Update()
-{
-    
+{    
 }
 
 
@@ -131,7 +130,7 @@ void Mesh::Render(Shader* shader)
 
     if (this->indexCount == 0)
     {
-        glErrorCall(glDrawArrays(GL_TRIANGLES, 0, this->vertexCount));
+        glErrorCall( glDrawArrays(GL_TRIANGLES, 0, this->vertexCount) );
     }
     else
         glErrorCall( glDrawElements(GL_TRIANGLES, this->indexCount, GL_UNSIGNED_INT, 0));

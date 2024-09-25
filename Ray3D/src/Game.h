@@ -91,7 +91,6 @@ private:
 	void Init_Shaders();
 	void Init_Textures();
 	void Init_Materials();
-	void Init_Meshes();
 	void Init_Models();
 	void Init_Lights();
 	void Init_Uniforms();
@@ -100,5 +99,5 @@ private:
 	void UpdateDeltaTime();
 	void UpdateUniforms();
 	
-	inline static void FramebufferResizeCallback(GLFWwindow* window, int fbw, int fbh) { glViewport(0, 0, fbw, fbh); };
+	inline static void FramebufferResizeCallback(GLFWwindow* window, int fbw, int fbh) { glViewport(0, 0, fbw, fbh); }
 };

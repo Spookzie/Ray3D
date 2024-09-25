@@ -1,13 +1,13 @@
 #include "Material.h"
 
 
-Material::Material(glm::vec3 ambient, glm::vec3 diffuse, glm::vec3 specular, GLint diffuseTex, GLint specularTex)
+Material::Material(glm::vec3 ambient, glm::vec3 diffuse, glm::vec3 specular, GLint diffuse_tex_id, GLint specular_tex_id)
 {
 	this->ambient = ambient;
 	this->diffuse = diffuse;
 	this->specular = specular;
-	this->diffuseTex = diffuseTex;
-	this->specularTex = specularTex;
+	this->diffuseTex = diffuse_tex_id;
+	this->specularTex = specular_tex_id;
 }
 
 Material::~Material()
