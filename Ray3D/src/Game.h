@@ -9,6 +9,7 @@
 #include "Primitive.h"
 #include "Camera.h"
 #include "Model.h"
+#include "objLoader.h"
 
 
 //	ENUMS	//
@@ -91,6 +92,7 @@ private:
 	void Init_Shaders();
 	void Init_Textures();
 	void Init_Materials();
+	void Init_OBJModels();
 	void Init_Models();
 	void Init_Lights();
 	void Init_Uniforms();

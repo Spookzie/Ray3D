@@ -43,13 +43,16 @@ void Model::Render(Shader* shader)
     //Use a program
     shader->Use();
 
-    //Bind textures
-    this->overrideTexDiffuse->Bind(0);
-    this->overrideTexSpecular->Bind(1);
-
     //Draw
-    for(auto* i : this->meshes)
+    for (auto* i : this->meshes)
+    {
+        //Bind textures
+        this->overrideTexDiffuse->Bind(0);
+        this->overrideTexSpecular->Bind(1);
+
+        //Draw
         i->Render(shader);
+    }
 }
 
 

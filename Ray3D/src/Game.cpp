@@ -103,7 +103,13 @@ void Game::Init_Textures()
 
 void Game::Init_Materials()
 {
-    this->materials.push_back(new Material(glm::vec3(0.1f), glm::vec3(1.0f), glm::vec3(1.0f), 0, 1));
+    this->materials.push_back(new Material(glm::vec3(0.1f), glm::vec3(1.0f), glm::vec3(2.0f), 0, 1));
+}
+
+void Game::Init_OBJModels()
+{
+    std::vector<Vertex> temp;
+    temp = LoadOBJ("res/OBJs/cube.obj");
 }
 
 void Game::Init_Models()
@@ -190,6 +196,7 @@ Game::Game(const char* title, const unsigned int width, const unsigned int heigh
     this->Init_Shaders();
     this->Init_Textures();
     this->Init_Materials();
+    this->Init_OBJModels();
     this->Init_Models();
     this->Init_Lights();
     this->Init_Uniforms();
@@ -280,8 +287,8 @@ void Game::Update()
     this->UpdateDeltaTime();
     this->UpdateInput();
 
-    this->models[0]->Rotate(glm::vec3(0.0f, 1.0f, 0.0f));
-    this->models[1]->Rotate(glm::vec3(0.0f, 1.0f, 0.0f));
+    //this->models[0]->Rotate(glm::vec3(0.0f, 1.0f, 0.0f));
+    //this->models[1]->Rotate(glm::vec3(0.0f, 1.0f, 0.0f));
 }
 
 
