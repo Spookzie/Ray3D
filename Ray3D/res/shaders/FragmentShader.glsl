@@ -10,6 +10,17 @@ struct Material
 };
 
 
+struct PointLight
+{
+	vec3 position;
+	float intensity;
+	vec3 color;
+	float constant;
+	float linear;
+	float quadratic;
+};
+
+
 in vec3 vs_position;
 in vec3 vs_color;
 in vec2 vs_texcoord;
@@ -18,6 +29,7 @@ in vec3 vs_normal;
 out vec4 fs_color;
 
 uniform Material material;
+uniform PointLight pointLight;
 uniform vec3 lightPos0;
 uniform vec3 cameraPos;
 
@@ -32,7 +44,7 @@ vec3 CalculateAmbient(Material material)
 vec3 CalculateDiffuse(Material material, vec3 vs_position, vec3 vs_normal, vec3 light_pos0)
 {
 	vec3 posToLightDirVec = normalize(light_pos0 - vs_position);
-	float diffuse		  = clamp(dot(posToLightDirVec, vs_normal), 0, 1);
+	float diffuse		  = clamp(dot(posToLightDirVec, normalize(vs_normal)), 0, 1);
 	
 	return (material.diffuse * diffuse);
 }
@@ -51,18 +63,15 @@ vec3 CalculateSpecular(Material material, vec3 vs_position, vec3 vs_normal, vec3
 
 void main()
 {
-	//fs_color = vec4(vs_color, 1.0f);
-	//fs_color = texture(texture0, vs_texcoord) * texture(texture1, vs_texcoord);
-
 	//	LIGHTING	//
 	//Ambient, Diffuse, & Specular
 	vec3 ambientFinal  = CalculateAmbient(material);
-	vec3 diffuseFinal  = CalculateDiffuse(material, vs_position, vs_normal, lightPos0);
-	vec3 specularFinal = CalculateSpecular(material, vs_position, vs_normal, lightPos0, cameraPos);
+	vec3 diffuseFinal  = CalculateDiffuse(material, vs_position, vs_normal, pointLight.position);
+	vec3 specularFinal = CalculateSpecular(material, vs_position, vs_normal, pointLight.position, cameraPos);
 
 	//Attenuation
-	float distance    = length(lightPos0 - vs_position);
-	float attenuation = 1.0f / (1.0f * 0.045f * distance * 0.075f * pow(distance, 2));
+	float distance    = length(pointLight.position - vs_position);
+	float attenuation = pointLight.constant / (1.0f + pointLight.linear * distance + pointLight.quadratic * pow(distance, 2));
 
 	//Final Light
 	ambientFinal  *= attenuation;

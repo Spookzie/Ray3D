@@ -167,7 +167,7 @@ void Game::Init_Models()
 
 void Game::Init_Lights()
 {
-    this->lights.push_back(glm::vec3(1.0f, 1.0f, 1.0f));
+    this->pointLights.push_back(new PointLight(glm::vec3(0.0f)));
 }
 
 void Game::Init_Uniforms()
@@ -175,7 +175,8 @@ void Game::Init_Uniforms()
     //this->shaders[SHADER_CORE_PROGRAM]->SetMat4fv(this->viewMatrix, "viewMatrix");
     //this->shaders[SHADER_CORE_PROGRAM]->SetMat4fv(this->projectionMatrix, "projectionMatrix");
 
-    this->shaders[SHADER_CORE_PROGRAM]->SetVec3f(this->lights[0], "lightPos0");
+    for each (PointLight * pl in this->pointLights)
+        pl->SendToShader(*this->shaders[SHADER_CORE_PROGRAM]);
 }
 //***************************************
 
@@ -243,6 +244,9 @@ Game::~Game()
 
     for (auto*& i : this->models)
         delete i;
+
+    for (size_t i = 0; i < this->pointLights.size(); i++)
+        delete this->pointLights[i];
 }
 
 
@@ -275,7 +279,7 @@ void Game::MouseInput()
     //Move Light
     if (glfwGetMouseButton(this->window, GLFW_MOUSE_BUTTON_1))
     {
-        this->lights[0] = this->camera.GetPosition();
+        this->pointLights[0]->SetPosition(this->camera.GetPosition());
     }
 }
 
@@ -348,7 +352,8 @@ void Game::UpdateUniforms()
     this->shaders[SHADER_CORE_PROGRAM]->SetMat4fv(this->viewMatrix, "viewMatrix");
     this->shaders[SHADER_CORE_PROGRAM]->SetMat4fv(this->projectionMatrix, "projectionMatrix");
     this->shaders[SHADER_CORE_PROGRAM]->SetVec3f(this->camera.GetPosition(), "cameraPos");
-    this->shaders[SHADER_CORE_PROGRAM]->SetVec3f(this->lights[0], "lightPos0");
+    for each (PointLight * pl in this->pointLights)
+        pl->SendToShader(*this->shaders[SHADER_CORE_PROGRAM]);
 
     this->materials[MAT_1]->SendToShader(*this->shaders[SHADER_CORE_PROGRAM]);
 }

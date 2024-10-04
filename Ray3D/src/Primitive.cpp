@@ -2,7 +2,7 @@
 
 
 //	PRIMITIVE CLASS	//
-//**************************************************
+//***********************************
 Primitive::Primitive()
 {
 }
@@ -14,25 +14,25 @@ Primitive::~Primitive()
 
 void Primitive::Set(const Vertex* vertices, const unsigned int vertexCount, const GLuint* indices, const unsigned int indexCount)
 {
-	for (size_t i = 0; i < vertexCount; i++)
-		this->vertices.push_back(vertices[i]);
-	
-	for (size_t i = 0; i < indexCount; i++)
-		this->indices.push_back(indices[i]);
+    for (size_t i = 0; i < vertexCount; i++)
+        this->vertices.push_back(vertices[i]);
+
+    for (size_t i = 0; i < indexCount; i++)
+        this->indices.push_back(indices[i]);
 }
-//**************************************************
+//***********************************
 
 
 //	QUAD CLASS	//
-//**************************************************
+//***********************************
 Quad::Quad()
 {
     Vertex vertices[] = {
         //Position                          //Color                         //Texcoords                 //Normal      
         glm::vec3(-0.5f,  0.5f,  0.0f),     glm::vec3(1.0f, 0.0f, 0.0f),    glm::vec2(0.0f, 1.0f),      glm::vec3(0.0f, 0.0f, 1.0f),    //index = 0 |   top left
         glm::vec3(-0.5f, -0.5f,  0.0f),     glm::vec3(0.0f, 1.0f, 0.0f),    glm::vec2(0.0f, 0.0f),      glm::vec3(0.0f, 0.0f, 1.0f),    //        1 |   bottom left
-        glm::vec3( 0.5f, -0.5f,  0.0f),     glm::vec3(0.0f, 0.0f, 1.0f),    glm::vec2(1.0f, 0.0f),      glm::vec3(0.0f, 0.0f, 1.0f),    //        2 |   bottom right
-        glm::vec3( 0.5f,  0.5f,  0.0f),     glm::vec3(0.0f, 1.0f, 0.0f),    glm::vec2(1.0f, 1.0f),      glm::vec3(0.0f, 0.0f, 1.0f)     //        3 |   top right
+        glm::vec3(0.5f, -0.5f,  0.0f),     glm::vec3(0.0f, 0.0f, 1.0f),    glm::vec2(1.0f, 0.0f),      glm::vec3(0.0f, 0.0f, 1.0f),    //        2 |   bottom right
+        glm::vec3(0.5f,  0.5f,  0.0f),     glm::vec3(0.0f, 1.0f, 0.0f),    glm::vec2(1.0f, 1.0f),      glm::vec3(0.0f, 0.0f, 1.0f)     //        3 |   top right
     };
     unsigned int vertexCount = sizeof(vertices) / sizeof(Vertex);
 
@@ -45,11 +45,11 @@ Quad::Quad()
 
     this->Set(vertices, vertexCount, indices, indexCount);
 }
-//**************************************************
+//***********************************
 
 
 //	TRIANGLE CLASS	//
-//**************************************************
+//***********************************
 Triangle::Triangle()
 {
     Vertex vertices[] = {
@@ -69,11 +69,11 @@ Triangle::Triangle()
 
     this->Set(vertices, vertexCount, indices, indexCount);
 }
-//**************************************************
+//***********************************
 
 
 //	PYRAMID CLASS	//
-//**************************************************
+//***********************************
 Pyramid::Pyramid()
 {
     Vertex vertices[] = {
@@ -106,11 +106,11 @@ Pyramid::Pyramid()
 
     this->Set(vertices, vertexCount, nullptr, 0);
 }
-//**************************************************
+//***********************************
 
 
 //	PYRAMID CLASS	//
-//**************************************************
+//***********************************
 Cube::Cube()
 {
     Vertex vertices[] =
@@ -146,4 +146,4 @@ Cube::Cube()
 
     this->Set(vertices, nrOfVertices, indices, nrOfIndices);
 }
-//**************************************************
+//***********************************
