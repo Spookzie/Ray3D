@@ -99,6 +99,10 @@ void Game::Init_Textures()
     //Texture 2
     this->textures.push_back(new Texture("res/textures/Bleach.png", GL_TEXTURE_2D));
     this->textures.push_back(new Texture("res/textures/Bleach_Specular.png", GL_TEXTURE_2D));
+    
+    //Texture 3
+    this->textures.push_back(new Texture("res/textures/floor.jpg", GL_TEXTURE_2D));
+    this->textures.push_back(new Texture("res/textures/floor_Specular.jpg", GL_TEXTURE_2D));
 }
 
 void Game::Init_Materials()
@@ -109,27 +113,55 @@ void Game::Init_Materials()
 void Game::Init_Models()
 {
     std::vector<Mesh*> meshes;
+    std::vector<Mesh*> meshes2;
 
-    meshes.push_back(new Mesh(&Pyramid(), glm::vec3(0.0f), glm::vec3(0.0f, 0.0f, 0.0f)));
+    //  Creating Meshes //
+    //Pyramids
+    meshes.push_back(new Mesh(
+        &Pyramid(),
+        glm::vec3(0.0f),
+        glm::vec3(-1.0f, 0.0f, -2.0f)));
+    
+    //Floor
+    meshes2.push_back(new Mesh(
+        &Quad(),
+        glm::vec3(0.0f),
+        glm::vec3(0.0f),
+        glm::vec3(-90.0f, 0.0f, 0.0f),
+        glm::vec3(100.0f)));
+
 
     //  Creating Models   //
+    //Spookzie
     this->models.push_back(new Model(
         glm::vec3(0.0f),
         this->materials[0],
         this->textures[TEX_LOGO],
         this->textures[TEX_LOGO_SPECULAR],
         meshes));
-    
+
+    //Ichigo
     this->models.push_back(new Model(
         glm::vec3(2.0f, 0.0f, 0.0f),
         this->materials[0],
         this->textures[TEX_BLEACH],
         this->textures[TEX_BLEACH_SPECULAR],
         meshes));
+    
+    //Floor
+    this->models.push_back(new Model(
+        glm::vec3(0.0f, -1.0f, 0.0f),
+        this->materials[0],
+        this->textures[TEX_FLOOR],
+        this->textures[TEX_FLOOR_SPECULAR],
+        meshes2));
 
 
     //Cleangin mesh after they have been assigned
     for (auto*& i : meshes)
+        delete i;
+
+    for (auto*& i : meshes2)
         delete i;
 }
 
