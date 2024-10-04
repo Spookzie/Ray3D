@@ -135,7 +135,7 @@ void Game::Init_Models()
 
 void Game::Init_Lights()
 {
-    this->lights.push_back(new glm::vec3(1.0f, 1.0f, 1.0f));
+    this->lights.push_back(glm::vec3(1.0f, 1.0f, 1.0f));
 }
 
 void Game::Init_Uniforms()
@@ -143,7 +143,7 @@ void Game::Init_Uniforms()
     //this->shaders[SHADER_CORE_PROGRAM]->SetMat4fv(this->viewMatrix, "viewMatrix");
     //this->shaders[SHADER_CORE_PROGRAM]->SetMat4fv(this->projectionMatrix, "projectionMatrix");
 
-    this->shaders[SHADER_CORE_PROGRAM]->SetVec3f(*this->lights[0], "lightPos0");
+    this->shaders[SHADER_CORE_PROGRAM]->SetVec3f(this->lights[0], "lightPos0");
 }
 //***************************************
 
@@ -211,9 +211,6 @@ Game::~Game()
 
     for (auto*& i : this->models)
         delete i;
-    
-    for (size_t i = 0; i < this->lights.size(); i++)
-        delete this->lights[i];
 }
 
 
@@ -223,11 +220,13 @@ void Game::MouseInput()
 {
     glfwGetCursorPos(this->window, &this->mouseX, &this->mouseY);
 
-    //This checks if it is the first time the mouse is being moved.
-    //If it is, it updates the last location with current location and is by-default set to false so as to not execute again.
-    //This helps in preventing wrong calculations at the start of the program.
     if (this->firstMouse)
     {
+        /*
+        * This checks if it is the first time the mouse is being moved.
+        * If it is, it updates the last location with current location and is by-default set to false so as to not execute again.
+        * This helps in preventing wrong calculations at the start of the program.
+        */
         this->lastMouseX = this->mouseX;
         this->lastMouseY = this->mouseY;
         this->firstMouse = false;
@@ -240,6 +239,12 @@ void Game::MouseInput()
     //Update last position
     this->lastMouseX = this->mouseX;
     this->lastMouseY = this->mouseY;
+
+    //Move Light
+    if (glfwGetMouseButton(this->window, GLFW_MOUSE_BUTTON_1))
+    {
+        this->lights[0] = this->camera.GetPosition();
+    }
 }
 
 void Game::KeyboardInput()
@@ -280,8 +285,8 @@ void Game::Update()
     this->UpdateDeltaTime();
     this->UpdateInput();
 
-    this->models[0]->Rotate(glm::vec3(0.0f, 1.0f, 0.0f));
-    this->models[1]->Rotate(glm::vec3(0.0f, 1.0f, 0.0f));
+    //this->models[0]->Rotate(glm::vec3(0.0f, 1.0f, 0.0f));
+    //this->models[1]->Rotate(glm::vec3(0.0f, 1.0f, 0.0f));
 }
 
 
@@ -311,6 +316,7 @@ void Game::UpdateUniforms()
     this->shaders[SHADER_CORE_PROGRAM]->SetMat4fv(this->viewMatrix, "viewMatrix");
     this->shaders[SHADER_CORE_PROGRAM]->SetMat4fv(this->projectionMatrix, "projectionMatrix");
     this->shaders[SHADER_CORE_PROGRAM]->SetVec3f(this->camera.GetPosition(), "cameraPos");
+    this->shaders[SHADER_CORE_PROGRAM]->SetVec3f(this->lights[0], "lightPos0");
 
     this->materials[MAT_1]->SendToShader(*this->shaders[SHADER_CORE_PROGRAM]);
 }

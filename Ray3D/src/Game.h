@@ -55,7 +55,7 @@ private:
 	std::vector < Model*> models;
 
 	//Lighting
-	std::vector<glm::vec3*> lights;
+	std::vector<glm::vec3> lights;
 
 
 public:
