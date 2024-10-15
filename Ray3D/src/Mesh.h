@@ -38,14 +38,14 @@ public:
 	void Update();
 	void Render(Shader* shader);
 
-	inline void SetOrigin(const glm::vec3 origin) { this->origin = origin; }
-	inline void SetPosition(const glm::vec3 position) { this->position = position; }
-	inline void SetRotation(const glm::vec3 rotation) { this->rotation = rotation; }
-	inline void SetScale(const glm::vec3 scale) { this->scale = scale; }
+	inline void SetOrigin(const glm::vec3 origin)		{ this->origin = origin; }
+	inline void SetPosition(const glm::vec3 position)	{ this->position = position; }
+	inline void SetRotation(const glm::vec3 rotation)	{ this->rotation = rotation; }
+	inline void SetScale(const glm::vec3 scale)			{ this->scale = scale; }
 
-	inline void Move(const glm::vec3 position) { this->position += position; }
-	inline void Rotate(const glm::vec3 rotation) { this->rotation += rotation; }
-	inline void Scale(const glm::vec3 scale) { this->scale += scale; }
+	inline void Move(const glm::vec3 position)		{ this->position += position; }
+	inline void Rotate(const glm::vec3 rotation)	{ this->rotation += rotation; }
+	inline void Scale(const glm::vec3 scale)		{ this->scale += scale; }
 
 private:
 	void Init_vao();

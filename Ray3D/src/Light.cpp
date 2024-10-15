@@ -29,8 +29,9 @@ PointLight::~PointLight()
 void PointLight::SendToShader(Shader& program_id)
 {
 	program_id.SetVec3f(this->position, "pointLight.position");
-	program_id.Set1f(this->intensity, "pointLight.intensity");
 	program_id.SetVec3f(this->color, "pointLight.color");
+
+	program_id.Set1f(this->intensity, "pointLight.intensity");
 	program_id.Set1f(this->constant, "pointLight.constant");
 	program_id.Set1f(this->linear, "pointLight.linear");
 	program_id.Set1f(this->quadratic, "pointLight.quadratic");
