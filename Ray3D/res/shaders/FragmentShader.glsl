@@ -38,6 +38,7 @@ uniform vec3 cameraPos;
 float CalculateAttenuation(PointLight light, vec3 vsPos)
 {
 	float dist = length(light.position - vsPos);
+
 	return ( light.constant / (1.0 + light.linear * dist + light.quadratic * pow(dist,2)) );
 }
 
@@ -59,7 +60,7 @@ vec3 CalculateDiffuse(Material mat, vec3 normal, vec3 lightDir)
 vec3 CalculateSpecular(Material mat, vec3 normal, vec3 vsPos, vec3 lightDir, vec3 viewDir)
 {
 	vec3 reflectDir = reflect(-lightDir, normal);
-    float spec		= pow(max(dot(viewDir, reflectDir), 0.0), 48);		// You can change shininess (32) if needed
+    float spec		= pow(max(dot(viewDir, reflectDir), 0.0), 48);		// You can change shininess (32, more popularly used) if needed
     
 	return (mat.specular * spec * texture(mat.specularTex, vs_texcoord).rgb);
 }
