@@ -6,8 +6,8 @@
 class Light
 {
 protected:
-	float intensity;
 	glm::vec3 color;
+	float intensity;
 
 public:
 	//Constructor & Destructor
