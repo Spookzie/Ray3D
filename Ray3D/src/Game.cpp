@@ -103,11 +103,24 @@ void Game::Init_Textures()
     //Texture 3
     this->textures.push_back(new Texture("res/textures/floor.jpg", GL_TEXTURE_2D));
     this->textures.push_back(new Texture("res/textures/floor_Specular.jpg", GL_TEXTURE_2D));
+    
+    //Texture 4
+    this->textures.push_back(new Texture("res/textures/emissive.jpg", GL_TEXTURE_2D));
+    this->textures.push_back(new Texture("res/textures/emissive_Specular.jpg", GL_TEXTURE_2D));
 }
 
 void Game::Init_Materials()
 {
-    this->materials.push_back(new Material(glm::vec3(0.1f), glm::vec3(1.0f), glm::vec3(1.0f), 0, 1));
+    //Regular Material [Index = 0]
+    this->materials.push_back(new Material(
+        glm::vec3(0.1f), glm::vec3(1.0f), glm::vec3(1.0f),  //Ambient, Diffuse, Specular
+        0, 1));                                             //DiffuseTex, SpecularTex
+    
+    //Emissive Material [Index = 1]
+    this->materials.push_back(new Material(
+        glm::vec3(0.1f), glm::vec3(0.5f), glm::vec3(0.5f),  //Ambient, Diffuse, Specular
+        0, 1,                                               //DiffuseTex, SpecularTex
+        glm::vec3(1.0f), 1.0f));                //Emissive color, intensity
 }
 
 void Game::Init_Models()
@@ -146,6 +159,14 @@ void Game::Init_Models()
         this->materials[0],
         this->textures[TEX_BLEACH],
         this->textures[TEX_BLEACH_SPECULAR],
+        meshes));
+
+    //Emissive
+    this->models.push_back(new Model(
+        glm::vec3(10.0f, 0.0f, 0.0f),
+        this->materials[1],
+        this->textures[TEX_EMISSIVE],
+        this->textures[TEX_EMISSIVE_SPECULAR],
         meshes));
     
     //Floor

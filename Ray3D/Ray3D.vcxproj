@@ -432,6 +432,8 @@
     <Image Include="res\textures\Basketball_Specular.png" />
     <Image Include="res\textures\Bleach.png" />
     <Image Include="res\textures\Bleach_Specular.png" />
+    <Image Include="res\textures\emissive.jpg" />
+    <Image Include="res\textures\emissive_specular.jpg" />
     <Image Include="res\textures\floor.jpg" />
     <Image Include="res\textures\floor_specular.jpg" />
     <Image Include="res\textures\Spookzie_Logo.png" />

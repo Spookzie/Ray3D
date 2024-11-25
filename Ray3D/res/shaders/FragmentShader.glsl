@@ -1,20 +1,26 @@
 #version 330 core
 
+
 struct Material
 {
 	vec3 ambient;
 	vec3 diffuse;
 	vec3 specular;
+	vec3 emissiveColor;
+
 	sampler2D diffuseTex;
 	sampler2D specularTex;
+	
+	float emissiveIntensity;
 };
 
 
 struct PointLight
 {
 	vec3 position;
-	float intensity;
 	vec3 color;
+
+	float intensity;
 	float constant;
 	float linear;
 	float quadratic;
@@ -22,7 +28,6 @@ struct PointLight
 
 
 in vec3 vs_position;
-in vec3 vs_color;
 in vec2 vs_texcoord;
 in vec3 vs_normal;
 
@@ -65,6 +70,12 @@ vec3 CalculateSpecular(Material mat, vec3 normal, vec3 vsPos, vec3 lightDir, vec
 	return (mat.specular * spec * texture(mat.specularTex, vs_texcoord).rgb);
 }
 
+//Emissive
+vec3 CalculateEmissive(Material mat)
+{
+	return (mat.emissiveColor * mat.emissiveIntensity);
+}
+
 
 void main()
 {
@@ -74,15 +85,22 @@ void main()
     vec3 lightDir = normalize(pointLight.position - vs_position);
     vec3 viewDir  = normalize(cameraPos - vs_position);
 
+
 	//Ambient, Diffuse, & Specular
 	vec3 ambientFinal  = CalculateAmbient(material);
 	vec3 diffuseFinal  = CalculateDiffuse(material, normal, lightDir);
 	vec3 specularFinal = CalculateSpecular(material, normal, vs_position, lightDir, viewDir);
 
+
+	//Emissive
+	vec3 emissiveFinal = CalculateEmissive(material);
+
+
 	//Attenuation
 	float attenuation = CalculateAttenuation(pointLight, vs_position);
-	vec3 finalColor = (ambientFinal + diffuseFinal + specularFinal) * attenuation;		//Applying attenuation to all final lighting values
+	vec3 finalColor = (ambientFinal + diffuseFinal + specularFinal) * attenuation + emissiveFinal;		//Applying attenuation to all final lighting values
 	
+
 	//Fetching diffuse texture color
 	vec4 texColor = texture(material.diffuseTex, vs_texcoord);
 
