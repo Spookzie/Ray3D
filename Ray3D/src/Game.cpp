@@ -1,11 +1,3 @@
-/****************************************
-            *** NOTE ***
-* If there is some type of error in moving the models or camera (or maybe even something else)
-* Try de-commenting the viewMatrix & projectionMatrix initialization in Init_Uniforms()
-* I did them cuz they felt redundant there.
-****************************************/
-
-
 #include "Game.h"
 
 
@@ -120,7 +112,7 @@ void Game::Init_Materials()
     this->materials.push_back(new Material(
         glm::vec3(0.1f), glm::vec3(0.5f), glm::vec3(0.5f),  //Ambient, Diffuse, Specular
         0, 1,                                               //DiffuseTex, SpecularTex
-        glm::vec3(1.0f), 1.0f));                //Emissive color, intensity
+        glm::vec3(1.0f), 1.0f));                            //Emissive color, intensity
 }
 
 void Game::Init_Models()
@@ -193,9 +185,6 @@ void Game::Init_Lights()
 
 void Game::Init_Uniforms()
 {
-    //this->shaders[SHADER_CORE_PROGRAM]->SetMat4fv(this->viewMatrix, "viewMatrix");
-    //this->shaders[SHADER_CORE_PROGRAM]->SetMat4fv(this->projectionMatrix, "projectionMatrix");
-
     for each (PointLight * pl in this->pointLights)
         pl->SendToShader(*this->shaders[SHADER_CORE_PROGRAM]);
 }
