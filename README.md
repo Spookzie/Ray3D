@@ -60,6 +60,20 @@ This approach keeps rendering code **clean, readable, and scalable** while maint
   
 ---
 
+## ▶️ Showreel
+
+A short visual showreel is included to demonstrate the real-time rendering capabilities of **Ray3D**.
+
+The showreel highlights:
+- Dynamic lighting and shading behavior
+- Real-time response of the rendering pipeline
+- Camera movement and 3D navigation
+- Correct lighting interaction with geometry and surface normals
+
+> 📽️ The showreel provides a visual overview of the rendering and lighting systems implemented in this project.
+
+---
+
 ## ▶️ How to Build & Run
 
 1. Clone the repository
